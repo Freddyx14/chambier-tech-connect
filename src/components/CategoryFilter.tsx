@@ -5,6 +5,7 @@ export type Category = {
   id: string;
   name: string;
   icon: string;
+  profession?: string; // Added this property
 };
 
 interface CategoryFilterProps {

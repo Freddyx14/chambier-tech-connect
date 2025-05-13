@@ -9,6 +9,10 @@ import { supabase } from "@/integrations/supabase/client";
 import { toast } from "@/hooks/use-toast";
 import { Category } from "@/components/CategoryFilter";
 import ServiceCard, { ServiceProvider } from "@/components/ServiceCard";
+import { Database } from "@/integrations/supabase/types";
+
+// Define profession type
+type ProfessionType = Database["public"]["Enums"]["profession_type"];
 
 // Define the categories
 const categories: Category[] = [
@@ -25,7 +29,7 @@ const categories: Category[] = [
 ];
 
 // Map category IDs to profession types
-const categoryToProfessionMap: Record<string, string> = {
+const categoryToProfessionMap: Record<string, ProfessionType> = {
   plomeria: "Plomero",
   electricidad: "Electricista",
   jardineria: "Jardinero", 
@@ -56,7 +60,8 @@ const ServicesPage = () => {
 
         // Filter by profession if a specific category is selected
         if (activeTab !== "all" && activeTab in categoryToProfessionMap) {
-          query = query.eq("profession", categoryToProfessionMap[activeTab]);
+          const profession = categoryToProfessionMap[activeTab];
+          query = query.eq("profession", profession);
         }
 
         // Order by rating (highest first)
