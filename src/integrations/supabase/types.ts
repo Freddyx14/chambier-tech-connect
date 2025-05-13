@@ -9,7 +9,127 @@ export type Json =
 export type Database = {
   public: {
     Tables: {
-      [_ in never]: never
+      portfolio_items: {
+        Row: {
+          created_at: string | null
+          description: string | null
+          id: string
+          image_url: string | null
+          professional_id: string | null
+          title: string
+        }
+        Insert: {
+          created_at?: string | null
+          description?: string | null
+          id?: string
+          image_url?: string | null
+          professional_id?: string | null
+          title: string
+        }
+        Update: {
+          created_at?: string | null
+          description?: string | null
+          id?: string
+          image_url?: string | null
+          professional_id?: string | null
+          title?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "portfolio_items_professional_id_fkey"
+            columns: ["professional_id"]
+            isOneToOne: false
+            referencedRelation: "professionals"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      professionals: {
+        Row: {
+          contact_email: string | null
+          contact_phone: string | null
+          contact_whatsapp: string | null
+          created_at: string | null
+          description: string | null
+          featured: boolean | null
+          id: string
+          name: string
+          profession: Database["public"]["Enums"]["profession_type"]
+          profile_image: string | null
+          rating: number | null
+          review_count: number | null
+          skills: string[] | null
+          updated_at: string | null
+        }
+        Insert: {
+          contact_email?: string | null
+          contact_phone?: string | null
+          contact_whatsapp?: string | null
+          created_at?: string | null
+          description?: string | null
+          featured?: boolean | null
+          id?: string
+          name: string
+          profession: Database["public"]["Enums"]["profession_type"]
+          profile_image?: string | null
+          rating?: number | null
+          review_count?: number | null
+          skills?: string[] | null
+          updated_at?: string | null
+        }
+        Update: {
+          contact_email?: string | null
+          contact_phone?: string | null
+          contact_whatsapp?: string | null
+          created_at?: string | null
+          description?: string | null
+          featured?: boolean | null
+          id?: string
+          name?: string
+          profession?: Database["public"]["Enums"]["profession_type"]
+          profile_image?: string | null
+          rating?: number | null
+          review_count?: number | null
+          skills?: string[] | null
+          updated_at?: string | null
+        }
+        Relationships: []
+      }
+      reviews: {
+        Row: {
+          comment: string | null
+          created_at: string | null
+          id: string
+          professional_id: string | null
+          rating: number
+          user_name: string
+        }
+        Insert: {
+          comment?: string | null
+          created_at?: string | null
+          id?: string
+          professional_id?: string | null
+          rating: number
+          user_name: string
+        }
+        Update: {
+          comment?: string | null
+          created_at?: string | null
+          id?: string
+          professional_id?: string | null
+          rating?: number
+          user_name?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "reviews_professional_id_fkey"
+            columns: ["professional_id"]
+            isOneToOne: false
+            referencedRelation: "professionals"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
     }
     Views: {
       [_ in never]: never
@@ -18,7 +138,17 @@ export type Database = {
       [_ in never]: never
     }
     Enums: {
-      [_ in never]: never
+      profession_type:
+        | "Plomero"
+        | "Electricista"
+        | "Jardinero"
+        | "Carpintero"
+        | "Pintor"
+        | "Albañil"
+        | "Cerrajero"
+        | "Limpiador"
+        | "Técnico informático"
+        | "Técnico de aire acondicionado"
     }
     CompositeTypes: {
       [_ in never]: never
@@ -133,6 +263,19 @@ export type CompositeTypes<
 
 export const Constants = {
   public: {
-    Enums: {},
+    Enums: {
+      profession_type: [
+        "Plomero",
+        "Electricista",
+        "Jardinero",
+        "Carpintero",
+        "Pintor",
+        "Albañil",
+        "Cerrajero",
+        "Limpiador",
+        "Técnico informático",
+        "Técnico de aire acondicionado",
+      ],
+    },
   },
 } as const

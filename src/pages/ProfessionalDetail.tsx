@@ -1,77 +1,108 @@
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useParams, Link } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Star } from "lucide-react";
 import Layout from "@/components/Layout";
+import { supabase } from "@/integrations/supabase/client";
+import { toast } from "@/hooks/use-toast";
 
-// Mock data - would be fetched from an API in a real app
-const mockProfessional = {
-  id: "1",
-  name: "Carlos Rodríguez",
-  profileImage: "https://randomuser.me/api/portraits/men/32.jpg",
-  profession: "Plomero",
-  description: "Más de 10 años de experiencia en todo tipo de servicios de plomería. Experto en reparaciones e instalaciones de sistemas hidráulicos residenciales y comerciales.",
-  skills: ["Reparaciones", "Instalaciones", "Fugas", "Desagües", "Calentadores"],
-  rating: 4.8,
-  reviewCount: 56,
-  contactInfo: {
-    phone: "+52 123 456 7890",
-    email: "carlos.rodriguez@email.com",
-    whatsapp: "+52 123 456 7890"
-  },
-  reviews: [
-    {
-      id: "r1",
-      user: "Ana M.",
-      date: "15 de abril, 2023",
-      rating: 5,
-      comment: "Excelente trabajo arreglando una fuga complicada. Muy profesional y puntual."
-    },
-    {
-      id: "r2",
-      user: "Ricardo L.",
-      date: "2 de marzo, 2023",
-      rating: 4,
-      comment: "Buen trabajo instalando un nuevo lavabo. Precio justo y trabajo limpio."
-    },
-    {
-      id: "r3",
-      user: "María P.",
-      date: "18 de febrero, 2023",
-      rating: 5,
-      comment: "Muy recomendable. Solucionó un problema que otros plomeros no pudieron resolver."
-    }
-  ],
-  portfolio: [
-    {
-      id: "p1",
-      title: "Instalación de Calentador",
-      image: "https://images.unsplash.com/photo-1607472586893-edb57bdc0e39?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxzZWFyY2h8Mnx8cGx1bWJpbmd8ZW58MHx8MHx8&auto=format&fit=crop&w=500&q=60",
-      description: "Instalación completa de sistema de calentador de agua."
-    },
-    {
-      id: "p2",
-      title: "Reparación de Tubería",
-      image: "https://images.unsplash.com/photo-1615266508770-52a0d7225d35?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxzZWFyY2h8M3x8cGx1bWJpbmd8ZW58MHx8MHx8&auto=format&fit=crop&w=500&q=60",
-      description: "Reparación de fugas en tuberías del baño principal."
-    },
-    {
-      id: "p3",
-      title: "Instalación de Lavabo",
-      image: "https://images.unsplash.com/photo-1593424718424-cf4d83f3def1?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxzZWFyY2h8NXx8cGx1bWJpbmd8ZW58MHx8MHx8&auto=format&fit=crop&w=500&q=60",
-      description: "Instalación completa de lavabo moderno en baño de visitas."
-    }
-  ]
-};
+// Type definitions for our data
+interface Professional {
+  id: string;
+  name: string;
+  profession: string;
+  description: string;
+  profile_image: string;
+  skills: string[];
+  rating: number;
+  review_count: number;
+  contact_phone: string;
+  contact_email: string;
+  contact_whatsapp: string;
+}
+
+interface Review {
+  id: string;
+  user_name: string;
+  rating: number;
+  comment: string;
+  created_at: string;
+}
+
+interface PortfolioItem {
+  id: string;
+  title: string;
+  description: string;
+  image_url: string;
+}
 
 const ProfessionalDetail = () => {
   const { id } = useParams<{ id: string }>();
   const [isLoggedIn] = useState(false); // This would be determined by your authentication system
+  const [loading, setLoading] = useState(true);
+  const [professional, setProfessional] = useState<Professional | null>(null);
+  const [reviews, setReviews] = useState<Review[]>([]);
+  const [portfolio, setPortfolio] = useState<PortfolioItem[]>([]);
   
-  // In a real app, you would fetch the professional data based on the ID
-  const professional = mockProfessional;
+  useEffect(() => {
+    const fetchProfessionalData = async () => {
+      if (!id) return;
+      
+      setLoading(true);
+      try {
+        // Fetch professional details
+        const { data: professionalData, error: professionalError } = await supabase
+          .from("professionals")
+          .select("*")
+          .eq("id", id)
+          .single();
+          
+        if (professionalError) {
+          throw professionalError;
+        }
+        
+        setProfessional(professionalData);
+        
+        // Fetch reviews
+        const { data: reviewsData, error: reviewsError } = await supabase
+          .from("reviews")
+          .select("*")
+          .eq("professional_id", id)
+          .order("created_at", { ascending: false });
+          
+        if (reviewsError) {
+          throw reviewsError;
+        }
+        
+        setReviews(reviewsData);
+        
+        // Fetch portfolio items
+        const { data: portfolioData, error: portfolioError } = await supabase
+          .from("portfolio_items")
+          .select("*")
+          .eq("professional_id", id);
+          
+        if (portfolioError) {
+          throw portfolioError;
+        }
+        
+        setPortfolio(portfolioData);
+      } catch (error) {
+        console.error("Error fetching data:", error);
+        toast({
+          title: "Error",
+          description: "No se pudo cargar la información del profesional. Intente nuevamente.",
+          variant: "destructive",
+        });
+      } finally {
+        setLoading(false);
+      }
+    };
+    
+    fetchProfessionalData();
+  }, [id]);
 
   const renderStars = (rating: number) => {
     return [...Array(5)].map((_, i) => (
@@ -83,6 +114,40 @@ const ProfessionalDetail = () => {
       />
     ));
   };
+  
+  // Format date to a more readable format (DD/MM/YYYY)
+  const formatDate = (dateString: string) => {
+    const date = new Date(dateString);
+    return date.toLocaleDateString('es-ES', {
+      day: '2-digit',
+      month: 'long',
+      year: 'numeric'
+    });
+  };
+
+  if (loading) {
+    return (
+      <Layout>
+        <div className="container mx-auto px-4 py-8 flex justify-center items-center min-h-[60vh]">
+          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-chambier-bright"></div>
+        </div>
+      </Layout>
+    );
+  }
+
+  if (!professional) {
+    return (
+      <Layout>
+        <div className="container mx-auto px-4 py-8 text-center">
+          <h1 className="text-3xl font-bold text-gray-800 mb-4">Profesional no encontrado</h1>
+          <p className="text-gray-600 mb-6">No pudimos encontrar el profesional que estás buscando.</p>
+          <Link to="/servicios">
+            <Button className="btn-primary">Ver todos los profesionales</Button>
+          </Link>
+        </div>
+      </Layout>
+    );
+  }
 
   return (
     <Layout>
@@ -92,7 +157,7 @@ const ProfessionalDetail = () => {
           <div className="flex flex-col md:flex-row">
             <div className="md:flex-shrink-0">
               <img
-                src={professional.profileImage}
+                src={professional.profile_image}
                 alt={professional.name}
                 className="w-36 h-36 rounded-full object-cover border-4 border-chambier-lightest mx-auto md:mx-0"
               />
@@ -103,23 +168,43 @@ const ProfessionalDetail = () => {
               
               <div className="flex items-center mt-2 justify-center md:justify-start">
                 <div className="flex">{renderStars(professional.rating)}</div>
-                <span className="ml-2 text-gray-600">({professional.reviewCount} reseñas)</span>
+                <span className="ml-2 text-gray-600">({professional.review_count} reseñas)</span>
               </div>
               
               <p className="mt-4 text-gray-700 max-w-2xl">{professional.description}</p>
               
+              <div className="mt-4">
+                <h3 className="text-lg font-medium text-gray-800 mb-2">Especialidades:</h3>
+                <div className="flex flex-wrap gap-2">
+                  {professional.skills.map((skill, index) => (
+                    <span 
+                      key={index}
+                      className="bg-chambier-lightest text-chambier-bright text-sm px-3 py-1 rounded-full"
+                    >
+                      {skill}
+                    </span>
+                  ))}
+                </div>
+              </div>
+              
               <div className="mt-6">
                 {isLoggedIn ? (
                   <div className="space-x-4">
-                    <Button className="btn-primary">
-                      <span className="mr-2">📱</span> Llamar
-                    </Button>
-                    <Button variant="outline" className="border-chambier-bright text-chambier-bright hover:bg-chambier-lightest">
-                      <span className="mr-2">📧</span> Enviar Email
-                    </Button>
-                    <Button variant="outline" className="border-green-500 text-green-500 hover:bg-green-50">
-                      <span className="mr-2">📱</span> WhatsApp
-                    </Button>
+                    <a href={`tel:${professional.contact_phone}`}>
+                      <Button className="btn-primary">
+                        <span className="mr-2">📱</span> Llamar
+                      </Button>
+                    </a>
+                    <a href={`mailto:${professional.contact_email}`}>
+                      <Button variant="outline" className="border-chambier-bright text-chambier-bright hover:bg-chambier-lightest">
+                        <span className="mr-2">📧</span> Enviar Email
+                      </Button>
+                    </a>
+                    <a href={`https://wa.me/${professional.contact_whatsapp.replace(/\s+/g, '')}`} target="_blank" rel="noopener noreferrer">
+                      <Button variant="outline" className="border-green-500 text-green-500 hover:bg-green-50">
+                        <span className="mr-2">📱</span> WhatsApp
+                      </Button>
+                    </a>
                   </div>
                 ) : (
                   <Link to="/login">
@@ -142,38 +227,52 @@ const ProfessionalDetail = () => {
             </TabsList>
             
             <TabsContent value="portfolio" className="mt-6">
-              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                {professional.portfolio.map((item) => (
-                  <div key={item.id} className="bg-white rounded-lg overflow-hidden shadow-md hover:shadow-lg transition-shadow">
-                    <img
-                      src={item.image}
-                      alt={item.title}
-                      className="w-full h-48 object-cover"
-                    />
-                    <div className="p-4">
-                      <h3 className="font-bold text-gray-800">{item.title}</h3>
-                      <p className="text-gray-600 mt-1">{item.description}</p>
+              {portfolio.length > 0 ? (
+                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                  {portfolio.map((item) => (
+                    <div key={item.id} className="bg-white rounded-lg overflow-hidden shadow-md hover:shadow-lg transition-shadow">
+                      <img
+                        src={item.image_url}
+                        alt={item.title}
+                        className="w-full h-48 object-cover"
+                      />
+                      <div className="p-4">
+                        <h3 className="font-bold text-gray-800">{item.title}</h3>
+                        <p className="text-gray-600 mt-1">{item.description}</p>
+                      </div>
                     </div>
-                  </div>
-                ))}
-              </div>
+                  ))}
+                </div>
+              ) : (
+                <div className="text-center py-12">
+                  <h3 className="text-xl font-medium text-gray-700">No hay elementos en el portafolio</h3>
+                  <p className="text-gray-600">Este profesional aún no ha añadido trabajos a su portafolio</p>
+                </div>
+              )}
             </TabsContent>
             
             <TabsContent value="reviews" className="mt-6">
-              <div className="space-y-6">
-                {professional.reviews.map((review) => (
-                  <div key={review.id} className="bg-white rounded-lg p-4 shadow-md">
-                    <div className="flex justify-between">
-                      <span className="font-medium">{review.user}</span>
-                      <span className="text-gray-500 text-sm">{review.date}</span>
+              {reviews.length > 0 ? (
+                <div className="space-y-6">
+                  {reviews.map((review) => (
+                    <div key={review.id} className="bg-white rounded-lg p-4 shadow-md">
+                      <div className="flex justify-between">
+                        <span className="font-medium">{review.user_name}</span>
+                        <span className="text-gray-500 text-sm">{formatDate(review.created_at)}</span>
+                      </div>
+                      <div className="flex mt-1">
+                        {renderStars(review.rating)}
+                      </div>
+                      <p className="mt-2 text-gray-700">{review.comment}</p>
                     </div>
-                    <div className="flex mt-1">
-                      {renderStars(review.rating)}
-                    </div>
-                    <p className="mt-2 text-gray-700">{review.comment}</p>
-                  </div>
-                ))}
-              </div>
+                  ))}
+                </div>
+              ) : (
+                <div className="text-center py-12">
+                  <h3 className="text-xl font-medium text-gray-700">No hay reseñas</h3>
+                  <p className="text-gray-600">Este profesional aún no tiene reseñas</p>
+                </div>
+              )}
             </TabsContent>
           </Tabs>
         </div>
