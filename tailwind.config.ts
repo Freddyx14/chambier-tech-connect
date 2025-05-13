@@ -1,3 +1,4 @@
+
 import type { Config } from "tailwindcss";
 
 export default {
@@ -61,7 +62,15 @@ export default {
 					'accent-foreground': 'hsl(var(--sidebar-accent-foreground))',
 					border: 'hsl(var(--sidebar-border))',
 					ring: 'hsl(var(--sidebar-ring))'
-				}
+				},
+        // Chambier custom colors
+        chambier: {
+          lightest: '#EFFFFF',
+          lighter: '#DFFFFF',
+          light: '#CFFFFF',
+          medium: '#BFFFFF',
+          bright: '#00F6FF',
+        }
 			},
 			borderRadius: {
 				lg: 'var(--radius)',
