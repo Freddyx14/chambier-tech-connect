@@ -16,9 +16,9 @@ const Header = () => {
             <Link to="/" className="flex items-center">
               <span className="text-2xl font-bold text-chambier-bright">Chambier</span>
               <img 
-                src="/chambier-worker-icon.png" 
+                src="https://i.imgur.com/3Xoa4pn.png" 
                 alt="Trabajador Chambier" 
-                className="h-7 ml-2" 
+                className="h-7 ml-1" 
               />
             </Link>
           </div>

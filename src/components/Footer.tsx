@@ -12,7 +12,7 @@ const Footer = () => {
               <img 
                 src="https://i.imgur.com/3Xoa4pn.png" 
                 alt="Trabajador Chambier" 
-                className="h-7 ml-2" 
+                className="h-7 ml-1" 
               />
             </Link>
             <p className="mt-2 text-sm text-gray-600">
