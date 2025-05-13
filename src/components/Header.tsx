@@ -11,10 +11,15 @@ const Header = () => {
     <header className="sticky top-0 z-10 bg-white border-b border-gray-200 shadow-sm">
       <div className="container mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex justify-between items-center h-16">
-          {/* Logo */}
+          {/* Logo with Worker Icon */}
           <div className="flex-shrink-0">
             <Link to="/" className="flex items-center">
               <span className="text-2xl font-bold text-chambier-bright">Chambier</span>
+              <img 
+                src="/chambier-worker-icon.png" 
+                alt="Trabajador Chambier" 
+                className="h-7 ml-2" 
+              />
             </Link>
           </div>
 

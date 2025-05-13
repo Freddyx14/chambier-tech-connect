@@ -9,6 +9,11 @@ const Footer = () => {
           <div className="md:col-span-1">
             <Link to="/" className="flex items-center">
               <span className="text-2xl font-bold text-chambier-bright">Chambier</span>
+              <img 
+                src="/chambier-worker-icon.png" 
+                alt="Trabajador Chambier" 
+                className="h-7 ml-2" 
+              />
             </Link>
             <p className="mt-2 text-sm text-gray-600">
               Conectando profesionales de confianza con quienes necesitan sus servicios.
