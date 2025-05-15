@@ -11,6 +11,7 @@ import Register from "./pages/Register";
 import ProfessionalDetail from "./pages/ProfessionalDetail";
 import NotFound from "./pages/NotFound";
 import BecomeProvider from "./pages/BecomeProvider";
+import RecoverPassword from "./pages/RecoverPassword";
 
 const queryClient = new QueryClient();
 
@@ -25,6 +26,7 @@ const App = () => (
           <Route path="/search" element={<SearchPage />} />
           <Route path="/login" element={<Login />} />
           <Route path="/register" element={<Register />} />
+          <Route path="/recuperar-password" element={<RecoverPassword />} />
           <Route path="/profesional/:id" element={<ProfessionalDetail />} />
           <Route path="/ser-chamber" element={<BecomeProvider />} />
           {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
