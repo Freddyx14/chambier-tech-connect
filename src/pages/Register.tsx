@@ -1,3 +1,4 @@
+
 import { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
@@ -5,7 +6,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import Layout from "@/components/Layout";
 import { useToast } from "@/hooks/use-toast";
-import { signUpWithEmail } from "@/integrations/supabase/auth";
+import { signUpWithEmail, linkPhoneToProfile } from "@/integrations/supabase/auth";
 import PhoneVerification from "@/components/PhoneVerification";
 import { Check } from "lucide-react";
 

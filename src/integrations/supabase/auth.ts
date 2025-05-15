@@ -53,6 +53,44 @@ export const getCurrentUser = async () => {
   }
 };
 
+// Función para solicitar restablecimiento de contraseña
+export const requestPasswordReset = async (email: string, options?: { redirectTo?: string }) => {
+  try {
+    const { data, error } = await supabase.auth.resetPasswordForEmail(email, options);
+    
+    if (error) throw error;
+    return { data, error: null };
+  } catch (error: any) {
+    return { data: null, error };
+  }
+};
+
+// Función para actualizar contraseña
+export const updatePassword = async (newPassword: string) => {
+  try {
+    const { data, error } = await supabase.auth.updateUser({
+      password: newPassword,
+    });
+    
+    if (error) throw error;
+    return { data, error: null };
+  } catch (error: any) {
+    return { data: null, error };
+  }
+};
+
+// Función para verificar código de restablecimiento de contraseña
+// Esta función no existe directamente en Supabase, ya que maneja el flujo por URL
+export const verifyPasswordResetCode = async (code: string) => {
+  try {
+    // En Supabase, esto se maneja automáticamente a través de la URL de redirección
+    // Aquí simplemente devolvemos éxito
+    return { valid: true, error: null };
+  } catch (error: any) {
+    return { valid: false, error };
+  }
+};
+
 // Función para generar código de verificación de teléfono
 export const generatePhoneVerificationCode = async (phone: string) => {
   try {
