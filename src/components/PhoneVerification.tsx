@@ -1,4 +1,3 @@
-
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -10,7 +9,7 @@ import {
 } from "@/components/ui/input-otp";
 import { useToast } from "@/hooks/use-toast";
 import { generatePhoneVerificationCode, verifyPhoneCode } from "@/integrations/supabase/auth";
-import { loader } from "lucide-react";
+import { Loader } from "lucide-react";
 
 interface PhoneVerificationProps {
   onVerified: (userId: string | null) => void;
@@ -120,7 +119,7 @@ const PhoneVerification = ({ onVerified }: PhoneVerificationProps) => {
           <Button type="submit" className="w-full" disabled={isLoading}>
             {isLoading ? (
               <>
-                <loader className="mr-2 h-4 w-4 animate-spin" />
+                <Loader className="mr-2 h-4 w-4 animate-spin" />
                 Enviando...
               </>
             ) : (
@@ -154,7 +153,7 @@ const PhoneVerification = ({ onVerified }: PhoneVerificationProps) => {
           <Button type="submit" className="w-full" disabled={isLoading}>
             {isLoading ? (
               <>
-                <loader className="mr-2 h-4 w-4 animate-spin" />
+                <Loader className="mr-2 h-4 w-4 animate-spin" />
                 Verificando...
               </>
             ) : (

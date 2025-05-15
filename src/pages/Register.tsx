@@ -1,4 +1,3 @@
-
 import { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
@@ -6,9 +5,9 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import Layout from "@/components/Layout";
 import { useToast } from "@/hooks/use-toast";
-import { signUpWithEmail, linkPhoneToProfile } from "@/integrations/supabase/auth";
+import { signUpWithEmail } from "@/integrations/supabase/auth";
 import PhoneVerification from "@/components/PhoneVerification";
-import { check } from "lucide-react";
+import { Check } from "lucide-react";
 
 enum RegistrationStep {
   EMAIL,
@@ -204,7 +203,7 @@ const Register = () => {
           {step === RegistrationStep.COMPLETE && (
             <div className="text-center py-8">
               <div className="mx-auto w-12 h-12 rounded-full bg-green-100 flex items-center justify-center mb-4">
-                <check className="h-6 w-6 text-green-600" />
+                <Check className="h-6 w-6 text-green-600" />
               </div>
               <h2 className="text-xl font-bold mb-2">¡Registro Exitoso!</h2>
               <p className="text-gray-600 mb-6">Tu cuenta ha sido creada correctamente.</p>

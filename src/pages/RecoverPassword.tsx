@@ -1,4 +1,3 @@
-
 import { useState } from "react";
 import { Link } from "react-router-dom";
 import { Button } from "@/components/ui/button";
@@ -6,8 +5,9 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import Layout from "@/components/Layout";
 import { useToast } from "@/hooks/use-toast";
-import { supabase } from "@/integrations/supabase/client";
-import { check } from "lucide-react";
+import { requestPasswordReset, verifyPasswordResetCode, updatePassword } from "@/integrations/supabase/auth";
+import { InputOTP, InputOTPGroup, InputOTPSlot } from "@/components/ui/input-otp";
+import { Check } from "lucide-react";
 
 const RecoverPassword = () => {
   const [email, setEmail] = useState("");
@@ -20,7 +20,7 @@ const RecoverPassword = () => {
     setIsLoading(true);
 
     try {
-      const { error } = await supabase.auth.resetPasswordForEmail(email, {
+      const { error } = await requestPasswordReset(email, {
         redirectTo: `${window.location.origin}/cambiar-password`,
       });
       
@@ -74,7 +74,7 @@ const RecoverPassword = () => {
           ) : (
             <div className="text-center py-8">
               <div className="mx-auto w-12 h-12 rounded-full bg-green-100 flex items-center justify-center mb-4">
-                <check className="h-6 w-6 text-green-600" />
+                <Check className="h-6 w-6 text-green-600" />
               </div>
               <h2 className="text-xl font-bold mb-2">¡Correo Enviado!</h2>
               <p className="text-gray-600 mb-6">

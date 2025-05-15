@@ -1,4 +1,3 @@
-
 import { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
@@ -9,7 +8,7 @@ import { useToast } from "@/hooks/use-toast";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { signInWithEmail, linkPhoneToProfile } from "@/integrations/supabase/auth";
 import PhoneVerification from "@/components/PhoneVerification";
-import { mail, phone } from "lucide-react";
+import { Mail, Phone } from "lucide-react";
 
 const Login = () => {
   const navigate = useNavigate();
@@ -121,11 +120,11 @@ const Login = () => {
             <Tabs defaultValue="email" className="w-full">
               <TabsList className="grid w-full grid-cols-2 mb-4">
                 <TabsTrigger value="email" className="flex items-center">
-                  <mail className="mr-2 h-4 w-4" />
+                  <Mail className="mr-2 h-4 w-4" />
                   Email
                 </TabsTrigger>
                 <TabsTrigger value="phone" className="flex items-center">
-                  <phone className="mr-2 h-4 w-4" />
+                  <Phone className="mr-2 h-4 w-4" />
                   Teléfono
                 </TabsTrigger>
               </TabsList>
