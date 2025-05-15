@@ -145,8 +145,8 @@ const HomePage = () => {
                 Únete a Chambier y empieza a conseguir nuevos clientes. Crea tu perfil, muestra tu trabajo y construye tu reputación en línea.
               </p>
               <div className="mt-6">
-                <Link to="/profesionales">
-                  <Button className="btn-primary">Únete como Profesional</Button>
+                <Link to="/ser-chamber">
+                  <Button className="btn-primary">Conviértete en un chamber</Button>
                 </Link>
               </div>
             </div>

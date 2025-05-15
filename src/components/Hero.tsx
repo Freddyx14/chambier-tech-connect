@@ -21,14 +21,14 @@ const Hero = () => {
           </div>
           
           <div className="flex flex-col sm:flex-row justify-center gap-4">
-            <Link to="/servicios">
+            <Link to="/search">
               <Button className="btn-primary text-base px-8 py-6">
                 Buscar Profesionales
               </Button>
             </Link>
-            <Link to="/profesionales">
+            <Link to="/ser-chamber">
               <Button variant="outline" className="border-chambier-bright text-chambier-bright hover:bg-chambier-lightest text-base px-8 py-6">
-                Soy Profesional
+                Conviértete en un chamber
               </Button>
             </Link>
           </div>

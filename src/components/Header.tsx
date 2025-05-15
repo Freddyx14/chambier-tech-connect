@@ -8,7 +8,7 @@ const Header = () => {
   const [isOpen, setIsOpen] = useState(false);
 
   return (
-    <header className="sticky top-0 z-10 bg-white border-b border-gray-200 shadow-sm">
+    <header className="sticky top-0 z-50 bg-white border-b border-gray-200 shadow-sm">
       <div className="container mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex justify-between items-center h-16">
           {/* Logo with Worker Icon */}
@@ -26,9 +26,7 @@ const Header = () => {
           {/* Desktop Navigation */}
           <nav className="hidden md:flex space-x-10">
             <Link to="/" className="font-medium text-gray-700 hover:text-chambier-bright">Inicio</Link>
-            <Link to="/servicios" className="font-medium text-gray-700 hover:text-chambier-bright">Servicios</Link>
-            <Link to="/como-funciona" className="font-medium text-gray-700 hover:text-chambier-bright">Cómo Funciona</Link>
-            <Link to="/profesionales" className="font-medium text-gray-700 hover:text-chambier-bright">Para Profesionales</Link>
+            <Link to="/ser-chamber" className="font-medium text-gray-700 hover:text-chambier-bright">Conviértete en un chamber</Link>
           </nav>
 
           {/* Desktop Login/Register */}
@@ -68,9 +66,7 @@ const Header = () => {
         <div className="md:hidden bg-white">
           <div className="px-2 pt-2 pb-3 space-y-1 sm:px-3">
             <Link to="/" className="block px-3 py-2 font-medium text-gray-700 hover:text-chambier-bright">Inicio</Link>
-            <Link to="/servicios" className="block px-3 py-2 font-medium text-gray-700 hover:text-chambier-bright">Servicios</Link>
-            <Link to="/como-funciona" className="block px-3 py-2 font-medium text-gray-700 hover:text-chambier-bright">Cómo Funciona</Link>
-            <Link to="/profesionales" className="block px-3 py-2 font-medium text-gray-700 hover:text-chambier-bright">Para Profesionales</Link>
+            <Link to="/ser-chamber" className="block px-3 py-2 font-medium text-gray-700 hover:text-chambier-bright">Conviértete en un chamber</Link>
           </div>
           <div className="pt-4 pb-3 border-t border-gray-200">
             <div className="px-5 space-y-2">

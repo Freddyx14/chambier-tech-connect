@@ -4,7 +4,6 @@ import { Link } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import Layout from "@/components/Layout";
 import { useToast } from "@/hooks/use-toast";
 
@@ -13,7 +12,6 @@ const Register = () => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
-  const [userType, setUserType] = useState("client");
   const [isLoading, setIsLoading] = useState(false);
   const { toast } = useToast();
 
@@ -97,20 +95,6 @@ const Register = () => {
                 onChange={(e) => setConfirmPassword(e.target.value)}
                 required
               />
-            </div>
-
-            <div className="space-y-3">
-              <Label>Tipo de Usuario</Label>
-              <RadioGroup value={userType} onValueChange={setUserType} className="flex flex-col space-y-1">
-                <div className="flex items-center space-x-2">
-                  <RadioGroupItem value="client" id="client" />
-                  <Label htmlFor="client" className="cursor-pointer">Soy Cliente</Label>
-                </div>
-                <div className="flex items-center space-x-2">
-                  <RadioGroupItem value="professional" id="professional" />
-                  <Label htmlFor="professional" className="cursor-pointer">Soy Profesional</Label>
-                </div>
-              </RadioGroup>
             </div>
 
             <Button type="submit" className="btn-primary w-full" disabled={isLoading}>
