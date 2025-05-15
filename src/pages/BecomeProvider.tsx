@@ -18,7 +18,7 @@ const BecomeProvider = () => {
           </p>
           <div className="mt-10">
             <img 
-              src="https://i.imgur.com/3Xoa4pn.png" 
+              src="https://i.imgur.com/HC5yBFO.png" 
               alt="Profesional feliz" 
               className="rounded-lg shadow-xl max-w-4xl mx-auto"
             />
