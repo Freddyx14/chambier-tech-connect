@@ -1,4 +1,5 @@
 
+
 import { supabase } from "./client";
 
 // Función para iniciar sesión con email y contraseña
@@ -6,6 +7,35 @@ export const signInWithEmail = async (email: string, password: string) => {
   try {
     const { data, error } = await supabase.auth.signInWithPassword({
       email,
+      password,
+    });
+    
+    if (error) throw error;
+    return { data, error: null };
+  } catch (error: any) {
+    return { data: null, error };
+  }
+};
+
+// Función para iniciar sesión con teléfono y contraseña
+export const signInWithPhone = async (phone: string, password: string) => {
+  try {
+    // Primero obtenemos el correo asociado al teléfono
+    const { data: profileData, error: profileError } = await supabase
+      .from('user_profiles')
+      .select('email')
+      .eq('phone_number', phone)
+      .single();
+    
+    if (profileError) throw profileError;
+    
+    if (!profileData || !profileData.email) {
+      throw new Error("No existe una cuenta asociada a este número de teléfono");
+    }
+    
+    // Usamos el correo para iniciar sesión
+    const { data, error } = await supabase.auth.signInWithPassword({
+      email: profileData.email,
       password,
     });
     

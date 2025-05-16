@@ -1,3 +1,4 @@
+
 import { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
@@ -6,18 +7,22 @@ import { Label } from "@/components/ui/label";
 import Layout from "@/components/Layout";
 import { useToast } from "@/hooks/use-toast";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { signInWithEmail, linkPhoneToProfile } from "@/integrations/supabase/auth";
+import { signInWithEmail, signInWithPhone, linkPhoneToProfile } from "@/integrations/supabase/auth";
 import PhoneVerification from "@/components/PhoneVerification";
-import { Mail, Phone } from "lucide-react";
+import { Mail, Phone, Eye, EyeOff } from "lucide-react";
 
 const Login = () => {
   const navigate = useNavigate();
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [phone, setPhone] = useState("");
+  const [phonePassword, setPhonePassword] = useState("");
   const [isLoading, setIsLoading] = useState(false);
   const [verificationStep, setVerificationStep] = useState<"email" | "phone" | "linking">("email");
   const [userId, setUserId] = useState<string | null>(null);
   const { toast } = useToast();
+  const [showPassword, setShowPassword] = useState(false);
+  const [showPhonePassword, setShowPhonePassword] = useState(false);
 
   const handleEmailLogin = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -43,6 +48,34 @@ const Login = () => {
         description: "Ahora verifica tu número telefónico"
       });
       setVerificationStep("phone");
+    }
+    
+    setIsLoading(false);
+  };
+  
+  const handlePhoneLogin = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setIsLoading(true);
+
+    const { data, error } = await signInWithPhone(phone, phonePassword);
+    
+    if (error) {
+      setIsLoading(false);
+      toast({
+        title: "Error de inicio de sesión",
+        description: error.message,
+        variant: "destructive"
+      });
+      return;
+    }
+    
+    // Si el inicio de sesión fue exitoso
+    if (data && data.user) {
+      toast({
+        title: "¡Bienvenido!",
+        description: "Has iniciado sesión correctamente"
+      });
+      navigate("/");
     }
     
     setIsLoading(false);
@@ -107,6 +140,14 @@ const Login = () => {
     navigate("/");
   };
 
+  const togglePasswordVisibility = () => {
+    setShowPassword(!showPassword);
+  };
+
+  const togglePhonePasswordVisibility = () => {
+    setShowPhonePassword(!showPhonePassword);
+  };
+
   return (
     <Layout>
       <div className="container max-w-md mx-auto py-12 px-4">
@@ -150,14 +191,27 @@ const Login = () => {
                         ¿Olvidaste tu contraseña?
                       </Link>
                     </div>
-                    <Input
-                      id="password"
-                      type="password"
-                      placeholder="••••••••"
-                      value={password}
-                      onChange={(e) => setPassword(e.target.value)}
-                      required
-                    />
+                    <div className="relative">
+                      <Input
+                        id="password"
+                        type={showPassword ? "text" : "password"}
+                        placeholder="••••••••"
+                        value={password}
+                        onChange={(e) => setPassword(e.target.value)}
+                        required
+                      />
+                      <button
+                        type="button"
+                        className="absolute right-3 top-1/2 -translate-y-1/2"
+                        onClick={togglePasswordVisibility}
+                      >
+                        {showPassword ? (
+                          <EyeOff className="h-4 w-4 text-gray-500" />
+                        ) : (
+                          <Eye className="h-4 w-4 text-gray-500" />
+                        )}
+                      </button>
+                    </div>
                   </div>
 
                   <Button type="submit" className="btn-primary w-full" disabled={isLoading}>
@@ -167,7 +221,56 @@ const Login = () => {
               </TabsContent>
               
               <TabsContent value="phone">
-                <PhoneVerification onVerified={handlePhoneVerified} />
+                <form onSubmit={handlePhoneLogin} className="space-y-6">
+                  <div className="space-y-2">
+                    <Label htmlFor="phone">Número de teléfono</Label>
+                    <Input
+                      id="phone"
+                      type="tel"
+                      placeholder="+51 999 999 999"
+                      value={phone}
+                      onChange={(e) => setPhone(e.target.value)}
+                      required
+                    />
+                    <p className="text-xs text-muted-foreground">
+                      Ingresa tu número con código de país (ej: +51 para Perú)
+                    </p>
+                  </div>
+
+                  <div className="space-y-2">
+                    <div className="flex justify-between">
+                      <Label htmlFor="phonePassword">Contraseña</Label>
+                      <Link to="/recuperar-password" className="text-sm text-chambier-bright hover:underline">
+                        ¿Olvidaste tu contraseña?
+                      </Link>
+                    </div>
+                    <div className="relative">
+                      <Input
+                        id="phonePassword"
+                        type={showPhonePassword ? "text" : "password"}
+                        placeholder="••••••••"
+                        value={phonePassword}
+                        onChange={(e) => setPhonePassword(e.target.value)}
+                        required
+                      />
+                      <button
+                        type="button"
+                        className="absolute right-3 top-1/2 -translate-y-1/2"
+                        onClick={togglePhonePasswordVisibility}
+                      >
+                        {showPhonePassword ? (
+                          <EyeOff className="h-4 w-4 text-gray-500" />
+                        ) : (
+                          <Eye className="h-4 w-4 text-gray-500" />
+                        )}
+                      </button>
+                    </div>
+                  </div>
+
+                  <Button type="submit" className="w-full" disabled={isLoading}>
+                    {isLoading ? "Iniciando sesión..." : "Iniciar Sesión"}
+                  </Button>
+                </form>
               </TabsContent>
             </Tabs>
           )}
