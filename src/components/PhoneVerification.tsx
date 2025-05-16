@@ -1,5 +1,5 @@
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -14,14 +14,29 @@ import { Loader } from "lucide-react";
 
 interface PhoneVerificationProps {
   onVerified: (userId: string | null) => void;
+  initialPhone?: string;
+  onPhoneChange?: (phone: string) => void;
 }
 
-const PhoneVerification = ({ onVerified }: PhoneVerificationProps) => {
-  const [phone, setPhone] = useState("");
+const PhoneVerification = ({ onVerified, initialPhone = "", onPhoneChange }: PhoneVerificationProps) => {
+  const [phone, setPhone] = useState(initialPhone);
   const [code, setCode] = useState("");
-  const [step, setStep] = useState<"enterPhone" | "enterCode">("enterPhone");
+  const [step, setStep] = useState<"enterPhone" | "enterCode">(initialPhone ? "enterCode" : "enterPhone");
   const [isLoading, setIsLoading] = useState(false);
   const { toast } = useToast();
+
+  useEffect(() => {
+    if (initialPhone) {
+      setPhone(initialPhone);
+    }
+  }, [initialPhone]);
+
+  const updatePhone = (newPhone: string) => {
+    setPhone(newPhone);
+    if (onPhoneChange) {
+      onPhoneChange(newPhone);
+    }
+  };
 
   const handleSendCode = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -109,7 +124,7 @@ const PhoneVerification = ({ onVerified }: PhoneVerificationProps) => {
               type="tel"
               placeholder="+51 999 999 999"
               value={phone}
-              onChange={(e) => setPhone(e.target.value)}
+              onChange={(e) => updatePhone(e.target.value)}
               required
             />
             <p className="text-xs text-muted-foreground">

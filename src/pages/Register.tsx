@@ -13,8 +13,8 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Mail, Phone } from "lucide-react";
 
 enum RegistrationStep {
-  EMAIL,
-  PHONE,
+  INITIAL,
+  VERIFICATION,
   COMPLETE
 }
 
@@ -24,23 +24,37 @@ const Register = () => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
+  const [phone, setPhone] = useState("");
   const [isLoading, setIsLoading] = useState(false);
-  const [step, setStep] = useState<RegistrationStep>(RegistrationStep.EMAIL);
+  const [step, setStep] = useState<RegistrationStep>(RegistrationStep.INITIAL);
   const [userId, setUserId] = useState<string | null>(null);
   const [registrationType, setRegistrationType] = useState<"email" | "phone">("email");
   const { toast } = useToast();
 
-  const handleEmailSignup = async (e: React.FormEvent) => {
-    e.preventDefault();
-    
+  const validatePasswords = () => {
     if (password !== confirmPassword) {
       toast({
         title: "Las contraseñas no coinciden",
         description: "Por favor verifica que ambas contraseñas sean iguales.",
         variant: "destructive"
       });
-      return;
+      return false;
     }
+    if (password.length < 6) {
+      toast({
+        title: "Contraseña muy corta",
+        description: "La contraseña debe tener al menos 6 caracteres.",
+        variant: "destructive"
+      });
+      return false;
+    }
+    return true;
+  };
+
+  const handleEmailSignup = async (e: React.FormEvent) => {
+    e.preventDefault();
+    
+    if (!validatePasswords()) return;
 
     setIsLoading(true);
 
@@ -65,8 +79,26 @@ const Register = () => {
         title: "Registro exitoso",
         description: "Ahora verifica tu número telefónico para completar el registro"
       });
-      setStep(RegistrationStep.PHONE);
+      setStep(RegistrationStep.VERIFICATION);
     }
+  };
+
+  const handlePhoneSignup = async (e: React.FormEvent) => {
+    e.preventDefault();
+    
+    if (!name.trim()) {
+      toast({
+        title: "Nombre requerido",
+        description: "Por favor ingresa tu nombre completo.",
+        variant: "destructive"
+      });
+      return;
+    }
+    
+    if (!validatePasswords()) return;
+    
+    // Continuar con la verificación del teléfono
+    setStep(RegistrationStep.VERIFICATION);
   };
   
   const handlePhoneVerified = async (phoneUserId: string | null) => {
@@ -81,11 +113,18 @@ const Register = () => {
     }
     
     if (registrationType === "email") {
-      // Si el registro es por email, procedemos a la siguiente etapa
-      setStep(RegistrationStep.COMPLETE);
+      // Si el registro es por email y ya verificamos el teléfono
+      handlePhoneRegistration(phone);
     } else {
       // Si el registro es por teléfono, completamos el registro
-      completePhoneRegistration();
+      setStep(RegistrationStep.COMPLETE);
+      toast({
+        title: "¡Registro completado!",
+        description: "Tu cuenta ha sido creada exitosamente"
+      });
+      // Aquí se implementaría la lógica para crear una cuenta basada en teléfono
+      // con el nombre, teléfono y contraseña ingresados
+      navigate("/");
     }
   };
   
@@ -108,6 +147,7 @@ const Register = () => {
     }
     
     if (success) {
+      setStep(RegistrationStep.COMPLETE);
       toast({
         title: "¡Registro completado!",
         description: "Tu cuenta ha sido creada exitosamente"
@@ -122,13 +162,23 @@ const Register = () => {
     }
   };
 
-  const completePhoneRegistration = () => {
-    toast({
-      title: "¡Registro completado!",
-      description: "Tu cuenta ha sido creada exitosamente"
-    });
-    navigate("/");
-  };
+  const renderPhoneVerification = () => (
+    <div className="space-y-4">
+      <PhoneVerification 
+        onVerified={handlePhoneVerified} 
+        initialPhone={phone}
+        onPhoneChange={(newPhone) => setPhone(newPhone)}
+      />
+      
+      <Button 
+        variant="outline" 
+        className="w-full mt-4"
+        onClick={() => setStep(RegistrationStep.INITIAL)}
+      >
+        Volver
+      </Button>
+    </div>
+  );
 
   return (
     <Layout>
@@ -139,16 +189,14 @@ const Register = () => {
             <p className="text-gray-600 mt-2">Únete a la comunidad de Chambier</p>
           </div>
 
-          {step === RegistrationStep.EMAIL && (
+          {step === RegistrationStep.INITIAL && (
             <>
               <div className="flex items-center gap-4 mb-6">
                 <div className="flex items-center justify-center w-8 h-8 rounded-full bg-primary text-white font-bold">
                   1
                 </div>
                 <div className="text-sm font-medium">
-                  {registrationType === "email" 
-                    ? "Ingresa tus datos personales" 
-                    : "Verifica tu número de teléfono"}
+                  Ingresa tus datos personales
                 </div>
               </div>
 
@@ -225,18 +273,68 @@ const Register = () => {
                 </TabsContent>
                 
                 <TabsContent value="phone">
-                  <div className="space-y-4">
-                    <p className="text-sm text-gray-600 mb-2">
-                      Ingresa y verifica tu número de celular peruano para crear tu cuenta
-                    </p>
-                    <PhoneVerification onVerified={handlePhoneVerified} />
-                  </div>
+                  <form onSubmit={handlePhoneSignup} className="space-y-6">
+                    <div className="space-y-2">
+                      <Label htmlFor="phone-name">Nombre Completo</Label>
+                      <Input
+                        id="phone-name"
+                        placeholder="Nombre y apellido"
+                        value={name}
+                        onChange={(e) => setName(e.target.value)}
+                        required
+                      />
+                    </div>
+                    
+                    <div className="space-y-2">
+                      <Label htmlFor="phone-number">Número de Celular</Label>
+                      <Input
+                        id="phone-number"
+                        type="tel"
+                        placeholder="+51 999 999 999"
+                        value={phone}
+                        onChange={(e) => setPhone(e.target.value)}
+                        required
+                      />
+                      <p className="text-xs text-muted-foreground">
+                        Ingresa tu número con código de país (ej: +51 para Perú)
+                      </p>
+                    </div>
+                    
+                    <div className="space-y-2">
+                      <Label htmlFor="phone-password">Contraseña</Label>
+                      <Input
+                        id="phone-password"
+                        type="password"
+                        placeholder="••••••••"
+                        value={password}
+                        onChange={(e) => setPassword(e.target.value)}
+                        required
+                        minLength={6}
+                      />
+                    </div>
+
+                    <div className="space-y-2">
+                      <Label htmlFor="phone-confirmPassword">Confirmar Contraseña</Label>
+                      <Input
+                        id="phone-confirmPassword"
+                        type="password"
+                        placeholder="••••••••"
+                        value={confirmPassword}
+                        onChange={(e) => setConfirmPassword(e.target.value)}
+                        required
+                      />
+                    </div>
+
+                    <Button type="submit" className="w-full">
+                      Continuar
+                    </Button>
+                  </form>
                 </TabsContent>
               </Tabs>
             </>
           )}
           
-          {step === RegistrationStep.PHONE && (
+          {step === RegistrationStep.VERIFICATION && (
             <>
               <div className="flex items-center gap-4 mb-6">
                 <div className="flex items-center justify-center w-8 h-8 rounded-full bg-primary text-white font-bold">
@@ -245,7 +343,7 @@ const Register = () => {
                 <div className="text-sm font-medium">Verifica tu número de teléfono</div>
               </div>
               
-              <PhoneVerification onVerified={handlePhoneVerified} />
+              {renderPhoneVerification()}
             </>
           )}
           

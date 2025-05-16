@@ -40,20 +40,25 @@ const ProfessionalDetail = () => {
       
       setLoading(true);
       try {
-        // Fetch professional details
+        // Fetch professional details by ID
+        // This will work with either numeric IDs or UUIDs by using a simpler equality check
         const { data: professionalData, error: professionalError } = await supabase
           .from("professionals")
           .select("*")
-          .eq("id", id)
-          .single();
+          .eq("id", id);
           
         if (professionalError) {
           throw professionalError;
         }
         
-        setProfessional(professionalData);
+        if (!professionalData || professionalData.length === 0) {
+          setProfessional(null);
+          return;
+        }
         
-        // Fetch reviews
+        setProfessional(professionalData[0]);
+        
+        // Fetch reviews for this professional
         const { data: reviewsData, error: reviewsError } = await supabase
           .from("reviews")
           .select("*")
@@ -66,7 +71,7 @@ const ProfessionalDetail = () => {
         
         setReviews(reviewsData);
         
-        // Fetch portfolio items
+        // Fetch portfolio items for this professional
         const { data: portfolioData, error: portfolioError } = await supabase
           .from("portfolio_items")
           .select("*")
