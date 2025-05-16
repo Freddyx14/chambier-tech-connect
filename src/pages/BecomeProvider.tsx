@@ -18,7 +18,7 @@ const BecomeProvider = () => {
           </p>
           <div className="mt-10">
             <img 
-              src="https://i.imgur.com/HC5yBFO.png" 
+              src="https://img.freepik.com/foto-gratis/concepto-entrega-guapo-hombre-africano-entrega-america-cruzo-brazos-sobre-aislado-fondo-estudio-gris-espacio-copia_1258-1277.jpg?semt=ais_hybrid&w=740" 
               alt="Profesional feliz" 
               className="rounded-lg shadow-xl max-w-4xl mx-auto"
             />
