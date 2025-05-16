@@ -9,6 +9,8 @@ import { useToast } from "@/hooks/use-toast";
 import { signUpWithEmail, linkPhoneToProfile } from "@/integrations/supabase/auth";
 import PhoneVerification from "@/components/PhoneVerification";
 import { Check } from "lucide-react";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { Mail, Phone } from "lucide-react";
 
 enum RegistrationStep {
   EMAIL,
@@ -25,6 +27,7 @@ const Register = () => {
   const [isLoading, setIsLoading] = useState(false);
   const [step, setStep] = useState<RegistrationStep>(RegistrationStep.EMAIL);
   const [userId, setUserId] = useState<string | null>(null);
+  const [registrationType, setRegistrationType] = useState<"email" | "phone">("email");
   const { toast } = useToast();
 
   const handleEmailSignup = async (e: React.FormEvent) => {
@@ -77,8 +80,13 @@ const Register = () => {
       return;
     }
     
-    // Proceder a la siguiente etapa
-    setStep(RegistrationStep.COMPLETE);
+    if (registrationType === "email") {
+      // Si el registro es por email, procedemos a la siguiente etapa
+      setStep(RegistrationStep.COMPLETE);
+    } else {
+      // Si el registro es por teléfono, completamos el registro
+      completePhoneRegistration();
+    }
   };
   
   const handlePhoneRegistration = async (phone: string) => {
@@ -114,6 +122,14 @@ const Register = () => {
     }
   };
 
+  const completePhoneRegistration = () => {
+    toast({
+      title: "¡Registro completado!",
+      description: "Tu cuenta ha sido creada exitosamente"
+    });
+    navigate("/");
+  };
+
   return (
     <Layout>
       <div className="container max-w-md mx-auto py-12 px-4">
@@ -129,62 +145,94 @@ const Register = () => {
                 <div className="flex items-center justify-center w-8 h-8 rounded-full bg-primary text-white font-bold">
                   1
                 </div>
-                <div className="text-sm font-medium">Ingresa tus datos personales</div>
+                <div className="text-sm font-medium">
+                  {registrationType === "email" 
+                    ? "Ingresa tus datos personales" 
+                    : "Verifica tu número de teléfono"}
+                </div>
               </div>
-            
-              <form onSubmit={handleEmailSignup} className="space-y-6">
-                <div className="space-y-2">
-                  <Label htmlFor="name">Nombre Completo</Label>
-                  <Input
-                    id="name"
-                    placeholder="Nombre y apellido"
-                    value={name}
-                    onChange={(e) => setName(e.target.value)}
-                    required
-                  />
-                </div>
 
-                <div className="space-y-2">
-                  <Label htmlFor="email">Correo Electrónico</Label>
-                  <Input
-                    id="email"
-                    type="email"
-                    placeholder="ejemplo@correo.com"
-                    value={email}
-                    onChange={(e) => setEmail(e.target.value)}
-                    required
-                  />
-                </div>
+              <Tabs 
+                defaultValue={registrationType} 
+                className="w-full"
+                onValueChange={(value) => setRegistrationType(value as "email" | "phone")}
+              >
+                <TabsList className="grid w-full grid-cols-2 mb-4">
+                  <TabsTrigger value="email" className="flex items-center">
+                    <Mail className="mr-2 h-4 w-4" />
+                    Email
+                  </TabsTrigger>
+                  <TabsTrigger value="phone" className="flex items-center">
+                    <Phone className="mr-2 h-4 w-4" />
+                    Teléfono
+                  </TabsTrigger>
+                </TabsList>
+                
+                <TabsContent value="email">
+                  <form onSubmit={handleEmailSignup} className="space-y-6">
+                    <div className="space-y-2">
+                      <Label htmlFor="name">Nombre Completo</Label>
+                      <Input
+                        id="name"
+                        placeholder="Nombre y apellido"
+                        value={name}
+                        onChange={(e) => setName(e.target.value)}
+                        required
+                      />
+                    </div>
 
-                <div className="space-y-2">
-                  <Label htmlFor="password">Contraseña</Label>
-                  <Input
-                    id="password"
-                    type="password"
-                    placeholder="••••••••"
-                    value={password}
-                    onChange={(e) => setPassword(e.target.value)}
-                    required
-                    minLength={6}
-                  />
-                </div>
+                    <div className="space-y-2">
+                      <Label htmlFor="email">Correo Electrónico</Label>
+                      <Input
+                        id="email"
+                        type="email"
+                        placeholder="ejemplo@correo.com"
+                        value={email}
+                        onChange={(e) => setEmail(e.target.value)}
+                        required
+                      />
+                    </div>
 
-                <div className="space-y-2">
-                  <Label htmlFor="confirmPassword">Confirmar Contraseña</Label>
-                  <Input
-                    id="confirmPassword"
-                    type="password"
-                    placeholder="••••••••"
-                    value={confirmPassword}
-                    onChange={(e) => setConfirmPassword(e.target.value)}
-                    required
-                  />
-                </div>
+                    <div className="space-y-2">
+                      <Label htmlFor="password">Contraseña</Label>
+                      <Input
+                        id="password"
+                        type="password"
+                        placeholder="••••••••"
+                        value={password}
+                        onChange={(e) => setPassword(e.target.value)}
+                        required
+                        minLength={6}
+                      />
+                    </div>
 
-                <Button type="submit" className="btn-primary w-full" disabled={isLoading}>
-                  {isLoading ? "Registrando..." : "Continuar"}
-                </Button>
-              </form>
+                    <div className="space-y-2">
+                      <Label htmlFor="confirmPassword">Confirmar Contraseña</Label>
+                      <Input
+                        id="confirmPassword"
+                        type="password"
+                        placeholder="••••••••"
+                        value={confirmPassword}
+                        onChange={(e) => setConfirmPassword(e.target.value)}
+                        required
+                      />
+                    </div>
+
+                    <Button type="submit" className="btn-primary w-full" disabled={isLoading}>
+                      {isLoading ? "Registrando..." : "Continuar"}
+                    </Button>
+                  </form>
+                </TabsContent>
+                
+                <TabsContent value="phone">
+                  <div className="space-y-4">
+                    <p className="text-sm text-gray-600 mb-2">
+                      Ingresa y verifica tu número de celular peruano para crear tu cuenta
+                    </p>
+                    <PhoneVerification onVerified={handlePhoneVerified} />
+                  </div>
+                </TabsContent>
+              </Tabs>
             </>
           )}
           

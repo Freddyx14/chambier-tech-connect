@@ -3,10 +3,11 @@ import { useState, useEffect } from "react";
 import { useParams, Link } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { Star } from "lucide-react";
+import { Star, Phone, Mail, MessageCircle } from "lucide-react";
 import Layout from "@/components/Layout";
 import { supabase } from "@/integrations/supabase/client";
-import { toast } from "@/hooks/use-toast";
+import { useToast } from "@/hooks/use-toast";
+import { getCurrentUser } from "@/integrations/supabase/auth";
 
 // Type definitions for our data
 interface Professional {
@@ -40,11 +41,22 @@ interface PortfolioItem {
 
 const ProfessionalDetail = () => {
   const { id } = useParams<{ id: string }>();
-  const [isLoggedIn] = useState(false); // This would be determined by your authentication system
+  const [isLoggedIn, setIsLoggedIn] = useState(false);
   const [loading, setLoading] = useState(true);
   const [professional, setProfessional] = useState<Professional | null>(null);
   const [reviews, setReviews] = useState<Review[]>([]);
   const [portfolio, setPortfolio] = useState<PortfolioItem[]>([]);
+  const { toast } = useToast();
+  
+  // Verificar si el usuario ha iniciado sesión
+  useEffect(() => {
+    const checkAuth = async () => {
+      const { user } = await getCurrentUser();
+      setIsLoggedIn(!!user);
+    };
+    
+    checkAuth();
+  }, []);
   
   useEffect(() => {
     const fetchProfessionalData = async () => {
@@ -102,7 +114,7 @@ const ProfessionalDetail = () => {
     };
     
     fetchProfessionalData();
-  }, [id]);
+  }, [id, toast]);
 
   const renderStars = (rating: number) => {
     return [...Array(5)].map((_, i) => (
@@ -123,6 +135,40 @@ const ProfessionalDetail = () => {
       month: 'long',
       year: 'numeric'
     });
+  };
+
+  // Renderizar el botón de WhatsApp según el estado de inicio de sesión
+  const renderWhatsAppButton = () => {
+    if (!professional) return null;
+    
+    if (isLoggedIn) {
+      // Si el usuario ha iniciado sesión, mostrar el botón normal con el número
+      return (
+        <a href={`https://wa.me/${professional.contact_whatsapp.replace(/\s+/g, '')}`} target="_blank" rel="noopener noreferrer" className="w-full">
+          <Button className="w-full bg-green-500 hover:bg-green-600 text-white">
+            <MessageCircle className="mr-2 h-5 w-5" />
+            WhatsApp: {professional.contact_whatsapp}
+          </Button>
+        </a>
+      );
+    } else {
+      // Si el usuario no ha iniciado sesión, mostrar el botón difuminado
+      return (
+        <Link to="/register" className="w-full">
+          <div className="relative">
+            <Button className="w-full bg-green-500 hover:bg-green-600 text-white filter blur-[4px] pointer-events-none">
+              <MessageCircle className="mr-2 h-5 w-5" />
+              WhatsApp: +51 XXX XXX XXX
+            </Button>
+            <div className="absolute inset-0 flex items-center justify-center">
+              <span className="bg-white/90 text-gray-800 px-3 py-1 rounded text-sm font-medium">
+                Regístrate/Inicia sesión para obtener el número
+              </span>
+            </div>
+          </div>
+        </Link>
+      );
+    }
   };
 
   if (loading) {
@@ -187,32 +233,20 @@ const ProfessionalDetail = () => {
                 </div>
               </div>
               
-              <div className="mt-6">
-                {isLoggedIn ? (
-                  <div className="space-x-4">
-                    <a href={`tel:${professional.contact_phone}`}>
-                      <Button className="btn-primary">
-                        <span className="mr-2">📱</span> Llamar
-                      </Button>
-                    </a>
-                    <a href={`mailto:${professional.contact_email}`}>
-                      <Button variant="outline" className="border-chambier-bright text-chambier-bright hover:bg-chambier-lightest">
-                        <span className="mr-2">📧</span> Enviar Email
-                      </Button>
-                    </a>
-                    <a href={`https://wa.me/${professional.contact_whatsapp.replace(/\s+/g, '')}`} target="_blank" rel="noopener noreferrer">
-                      <Button variant="outline" className="border-green-500 text-green-500 hover:bg-green-50">
-                        <span className="mr-2">📱</span> WhatsApp
-                      </Button>
-                    </a>
-                  </div>
-                ) : (
-                  <Link to="/login">
-                    <Button className="btn-primary">
-                      Inicia sesión para contactar
-                    </Button>
-                  </Link>
-                )}
+              <div className="mt-6 grid grid-cols-1 sm:grid-cols-3 gap-4">
+                <a href={`tel:${professional.contact_phone}`}>
+                  <Button variant="outline" className="w-full border-chambier-bright text-chambier-bright hover:bg-chambier-lightest">
+                    <Phone className="mr-2 h-5 w-5" />
+                    Llamar
+                  </Button>
+                </a>
+                <a href={`mailto:${professional.contact_email}`}>
+                  <Button variant="outline" className="w-full border-chambier-bright text-chambier-bright hover:bg-chambier-lightest">
+                    <Mail className="mr-2 h-5 w-5" />
+                    Email
+                  </Button>
+                </a>
+                {renderWhatsAppButton()}
               </div>
             </div>
           </div>

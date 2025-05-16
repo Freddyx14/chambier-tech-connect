@@ -13,6 +13,7 @@ import ProfessionalDetail from "./pages/ProfessionalDetail";
 import NotFound from "./pages/NotFound";
 import BecomeProvider from "./pages/BecomeProvider";
 import RecoverPassword from "./pages/RecoverPassword";
+import ScrollToTop from "./components/ScrollToTop";
 
 // Create a new QueryClient instance
 const queryClient = new QueryClient();
@@ -24,6 +25,7 @@ const App = () => (
         <Toaster />
         <Sonner />
         <BrowserRouter>
+          <ScrollToTop />
           <Routes>
             <Route path="/" element={<HomePage />} />
             <Route path="/search" element={<SearchPage />} />

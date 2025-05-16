@@ -1,3 +1,4 @@
+
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -106,13 +107,13 @@ const PhoneVerification = ({ onVerified }: PhoneVerificationProps) => {
             <Input
               id="phone"
               type="tel"
-              placeholder="+52 123 456 7890"
+              placeholder="+51 999 999 999"
               value={phone}
               onChange={(e) => setPhone(e.target.value)}
               required
             />
             <p className="text-xs text-muted-foreground">
-              Ingresa tu número con código de país (ej: +52 para México)
+              Ingresa tu número con código de país (ej: +51 para Perú)
             </p>
           </div>
           
