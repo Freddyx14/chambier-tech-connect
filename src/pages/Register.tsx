@@ -72,14 +72,14 @@ const Register = () => {
       return;
     }
     
-    // Si el registro fue exitoso, guardamos el ID del usuario
+    // Si el registro fue exitoso, completamos el proceso
     if (data && data.user) {
-      setUserId(data.user.id);
       toast({
         title: "Registro exitoso",
-        description: "Ahora verifica tu número telefónico para completar el registro"
+        description: "Se ha enviado un correo de verificación a tu dirección de email"
       });
-      setStep(RegistrationStep.VERIFICATION);
+      // Ya no necesitamos verificación de teléfono, vamos directamente a complete
+      setStep(RegistrationStep.COMPLETE);
     }
   };
 
@@ -112,54 +112,20 @@ const Register = () => {
       return;
     }
     
-    if (registrationType === "email") {
-      // Si el registro es por email y ya verificamos el teléfono
-      handlePhoneRegistration(phone);
-    } else {
-      // Si el registro es por teléfono, completamos el registro
-      setStep(RegistrationStep.COMPLETE);
-      toast({
-        title: "¡Registro completado!",
-        description: "Tu cuenta ha sido creada exitosamente"
-      });
-      // Aquí se implementaría la lógica para crear una cuenta basada en teléfono
-      // con el nombre, teléfono y contraseña ingresados
+    // Completamos el registro basado en verificación de teléfono
+    setStep(RegistrationStep.COMPLETE);
+    toast({
+      title: "¡Registro completado!",
+      description: "Tu cuenta ha sido creada exitosamente"
+    });
+    
+    // Aquí se podría implementar la lógica adicional para crear una cuenta basada en teléfono
+    // con el nombre, teléfono y contraseña ingresados
+    
+    // Redirigir al usuario a la página principal después de un breve retraso
+    setTimeout(() => {
       navigate("/");
-    }
-  };
-  
-  const handlePhoneRegistration = async (phone: string) => {
-    if (!userId) return;
-    
-    setIsLoading(true);
-    
-    const { success, error } = await linkPhoneToProfile(userId, phone);
-    
-    setIsLoading(false);
-    
-    if (error) {
-      toast({
-        title: "Error",
-        description: "No se pudo vincular el teléfono: " + error.message,
-        variant: "destructive"
-      });
-      return;
-    }
-    
-    if (success) {
-      setStep(RegistrationStep.COMPLETE);
-      toast({
-        title: "¡Registro completado!",
-        description: "Tu cuenta ha sido creada exitosamente"
-      });
-      navigate("/");
-    } else {
-      toast({
-        title: "Error",
-        description: "Este número de teléfono ya está asociado con otra cuenta",
-        variant: "destructive"
-      });
-    }
+    }, 2000);
   };
 
   const renderPhoneVerification = () => (
@@ -267,7 +233,7 @@ const Register = () => {
                     </div>
 
                     <Button type="submit" className="btn-primary w-full" disabled={isLoading}>
-                      {isLoading ? "Registrando..." : "Continuar"}
+                      {isLoading ? "Registrando..." : "Crear cuenta"}
                     </Button>
                   </form>
                 </TabsContent>

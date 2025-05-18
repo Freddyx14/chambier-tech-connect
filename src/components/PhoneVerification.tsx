@@ -9,16 +9,30 @@ import {
   InputOTPSlot 
 } from "@/components/ui/input-otp";
 import { useToast } from "@/hooks/use-toast";
-import { generatePhoneVerificationCode, verifyPhoneCode } from "@/integrations/supabase/auth";
+import { 
+  generatePhoneVerificationCode, 
+  verifyPhoneCode,
+  signUpWithPhone 
+} from "@/integrations/supabase/auth";
 import { Loader } from "lucide-react";
 
 interface PhoneVerificationProps {
   onVerified: (userId: string | null) => void;
   initialPhone?: string;
   onPhoneChange?: (phone: string) => void;
+  fullName?: string;
+  password?: string;
+  isRegistration?: boolean;
 }
 
-const PhoneVerification = ({ onVerified, initialPhone = "", onPhoneChange }: PhoneVerificationProps) => {
+const PhoneVerification = ({ 
+  onVerified, 
+  initialPhone = "", 
+  onPhoneChange,
+  fullName,
+  password,
+  isRegistration = false
+}: PhoneVerificationProps) => {
   const [phone, setPhone] = useState(initialPhone);
   const [code, setCode] = useState("");
   const [step, setStep] = useState<"enterPhone" | "enterCode">(initialPhone ? "enterCode" : "enterPhone");
@@ -94,9 +108,8 @@ const PhoneVerification = ({ onVerified, initialPhone = "", onPhoneChange }: Pho
     
     const { userId, error } = await verifyPhoneCode(phone, code);
     
-    setIsLoading(false);
-    
     if (error) {
+      setIsLoading(false);
       toast({
         title: "Error",
         description: "Código inválido o expirado",
@@ -105,12 +118,39 @@ const PhoneVerification = ({ onVerified, initialPhone = "", onPhoneChange }: Pho
       return;
     }
     
-    toast({
-      title: "Verificación exitosa",
-      description: "Tu número de teléfono ha sido verificado"
-    });
-    
-    onVerified(userId);
+    // Si es un registro con número de teléfono y el teléfono no está en uso (userId es null)
+    if (isRegistration && !userId && fullName && password) {
+      // Registrar al usuario con su teléfono
+      const { data, error: signUpError } = await signUpWithPhone(phone, password, fullName);
+      
+      setIsLoading(false);
+      
+      if (signUpError) {
+        toast({
+          title: "Error de registro",
+          description: signUpError.message,
+          variant: "destructive"
+        });
+        return;
+      }
+      
+      toast({
+        title: "Verificación exitosa",
+        description: "Tu cuenta ha sido creada correctamente"
+      });
+      
+      onVerified(data?.user?.id || null);
+    } else {
+      // Para verificación normal o login
+      setIsLoading(false);
+      
+      toast({
+        title: "Verificación exitosa",
+        description: "Tu número de teléfono ha sido verificado"
+      });
+      
+      onVerified(userId);
+    }
   };
 
   return (

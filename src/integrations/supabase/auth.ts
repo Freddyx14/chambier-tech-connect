@@ -1,5 +1,4 @@
 
-
 import { supabase } from "./client";
 
 // Función para iniciar sesión con email y contraseña
@@ -55,6 +54,39 @@ export const signUpWithEmail = async (email: string, password: string) => {
     });
     
     if (error) throw error;
+    return { data, error: null };
+  } catch (error: any) {
+    return { data: null, error };
+  }
+};
+
+// Función para registrar usuario con teléfono y contraseña
+// Esta función se usaría cuando el usuario se registra verificando su teléfono
+export const signUpWithPhone = async (phone: string, password: string, fullName: string, email?: string) => {
+  try {
+    // Generar un email temporal si no se proporcionó uno
+    const userEmail = email || `${phone.replace(/[^0-9]/g, '')}@temp.chambier.com`;
+    
+    // Primero registramos el usuario en Supabase Auth con el email (real o generado)
+    const { data, error } = await supabase.auth.signUp({
+      email: userEmail,
+      password,
+      options: {
+        data: {
+          full_name: fullName,
+          phone: phone
+        }
+      }
+    });
+    
+    if (error) throw error;
+    
+    // Si el registro fue exitoso y tenemos un ID de usuario,
+    // vinculamos el teléfono a su perfil
+    if (data && data.user) {
+      await linkPhoneToProfile(data.user.id, phone);
+    }
+    
     return { data, error: null };
   } catch (error: any) {
     return { data: null, error };
