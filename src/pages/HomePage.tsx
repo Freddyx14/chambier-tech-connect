@@ -1,4 +1,3 @@
-
 import { Link } from "react-router-dom";
 import Layout from "@/components/Layout";
 import Hero from "@/components/Hero";
@@ -152,7 +151,7 @@ const HomePage = () => {
             </div>
             <div className="mt-10 md:mt-0 md:w-1/2 md:text-right">
               <img
-                src="https://images.unsplash.com/photo-1529316711860-4d65b9b7cf30?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxzZWFyY2h8MTB8fHRyYWRlc21hbnxlbnwwfHwwfHw%3D&auto=format&fit=crop&w=500&q=60"
+                src="https://images.unsplash.com/photo-1580893246395-52aead8960dc?q=80&w=2874&auto=format&fit=crop"
                 alt="Profesional"
                 className="rounded-lg mx-auto md:ml-auto md:mr-0 shadow-lg"
                 style={{ maxWidth: "400px" }}
