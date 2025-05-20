@@ -4,14 +4,16 @@ import { useNavigate, useLocation } from "react-router-dom";
 import Layout from "@/components/Layout";
 import { useAuth } from "@/contexts/AuthContext";
 import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { useToast } from "@/hooks/use-toast";
 import { supabase } from "@/integrations/supabase/client";
-import { Loader2, Upload, X, Plus } from "lucide-react";
-import { Card, CardContent } from "@/components/ui/card";
-import { Checkbox } from "@/components/ui/checkbox";
+import { Loader2 } from "lucide-react";
+
+// Importación de componentes refactorizados
+import PersonalInfoFields from "@/components/chamber/PersonalInfoFields";
+import ProfilePhotoUpload from "@/components/chamber/ProfilePhotoUpload";
+import ServiceSelector, { ServiceType, serviceOptions } from "@/components/chamber/ServiceSelector";
+import PortfolioUploader, { PortfolioImage } from "@/components/chamber/PortfolioUploader";
 
 interface FormData {
   first_name: string;
@@ -19,32 +21,12 @@ interface FormData {
   dni: string;
   age: string;
   phone_number: string;
-  services: string[];
+  services: ServiceType[];
   other_service: string;
   description: string;
   profile_photo?: string;
   portfolio_images: PortfolioImage[];
 }
-
-interface PortfolioImage {
-  id?: string;
-  file?: File;
-  preview: string;
-  url?: string;
-  description: string;
-}
-
-const serviceOptions = [
-  { id: 'plomero', label: 'Plomero' },
-  { id: 'jardinero', label: 'Jardinero' },
-  { id: 'electricista', label: 'Electricista' },
-  { id: 'limpieza', label: 'Limpieza' },
-  { id: 'pintura', label: 'Pintura' },
-  { id: 'cerrajero', label: 'Cerrajero' },
-  { id: 'ensamblador', label: 'Ensamblador' },
-  { id: 'soldador', label: 'Soldador' },
-  { id: 'otro', label: 'Otro' }
-];
 
 const ChamberFormPage = () => {
   const { user, loading } = useAuth();
@@ -66,7 +48,6 @@ const ChamberFormPage = () => {
   });
   
   const [profilePhotoFile, setProfilePhotoFile] = useState<File | null>(null);
-  const [profilePhotoPreview, setProfilePhotoPreview] = useState<string | null>(null);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [chamberProfileId, setChamberProfileId] = useState<string | null>(null);
 
@@ -77,7 +58,7 @@ const ChamberFormPage = () => {
     } else if (user && isEditMode) {
       fetchChamberProfile();
     }
-  }, [user, loading, isEditMode]);
+  }, [user, loading, isEditMode, navigate]);
 
   // Cargar el perfil del chamber para edición
   const fetchChamberProfile = async () => {
@@ -108,10 +89,6 @@ const ChamberFormPage = () => {
         profile_photo: chamberData.profile_photo || "",
         portfolio_images: []
       });
-
-      if (chamberData.profile_photo) {
-        setProfilePhotoPreview(chamberData.profile_photo);
-      }
 
       // Obtener imágenes del portafolio
       const { data: portfolioData, error: portfolioError } = await supabase
@@ -147,7 +124,7 @@ const ChamberFormPage = () => {
   };
 
   // Manejar cambios en los servicios (checkboxes)
-  const handleServiceChange = (serviceId: string, checked: boolean) => {
+  const handleServiceChange = (serviceId: ServiceType, checked: boolean) => {
     if (checked) {
       setFormData(prev => ({
         ...prev,
@@ -162,15 +139,15 @@ const ChamberFormPage = () => {
   };
 
   // Manejar cambio de foto de perfil
-  const handleProfilePhotoChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const file = e.target.files?.[0];
-    if (file) {
-      setProfilePhotoFile(file);
-      const reader = new FileReader();
-      reader.onloadend = () => {
-        setProfilePhotoPreview(reader.result as string);
-      };
-      reader.readAsDataURL(file);
+  const handleProfilePhotoChange = (file: File | null, preview: string | null) => {
+    setProfilePhotoFile(file);
+    if (preview) {
+      setFormData(prev => ({ ...prev, profile_photo: preview }));
+    } else {
+      setFormData(prev => {
+        const { profile_photo, ...rest } = prev;
+        return rest;
+      });
     }
   };
 
@@ -274,7 +251,7 @@ const ChamberFormPage = () => {
         profilePhotoUrl = await uploadFile(profilePhotoFile, 'profiles');
       }
       
-      // Datos del chamber para la base de datos
+      // Datos del chamber para la base de datos - corregido para asegurar que services es del tipo correcto
       const chamberData = {
         user_id: user.id,
         first_name: formData.first_name,
@@ -282,7 +259,7 @@ const ChamberFormPage = () => {
         dni: formData.dni,
         age: parseInt(formData.age),
         phone_number: formData.phone_number,
-        services: formData.services,
+        services: formData.services as ServiceType[], // Aseguramos que el tipo es correcto
         other_service: formData.services.includes('otro') ? formData.other_service : null,
         description: formData.description,
         profile_photo: profilePhotoUrl
@@ -380,153 +357,33 @@ const ChamberFormPage = () => {
           </h1>
 
           <form onSubmit={handleSubmit} className="space-y-6">
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-              {/* Nombre */}
-              <div className="space-y-2">
-                <Label htmlFor="first_name">Primer Nombre *</Label>
-                <Input
-                  id="first_name"
-                  name="first_name"
-                  value={formData.first_name}
-                  onChange={handleChange}
-                  required
-                />
-              </div>
+            {/* Información Personal */}
+            <PersonalInfoFields
+              firstName={formData.first_name}
+              lastName={formData.last_name}
+              dni={formData.dni}
+              age={formData.age}
+              phoneNumber={formData.phone_number}
+              onInputChange={handleChange}
+            />
 
-              {/* Apellido */}
-              <div className="space-y-2">
-                <Label htmlFor="last_name">Primer Apellido *</Label>
-                <Input
-                  id="last_name"
-                  name="last_name"
-                  value={formData.last_name}
-                  onChange={handleChange}
-                  required
-                />
-              </div>
-
-              {/* DNI */}
-              <div className="space-y-2">
-                <Label htmlFor="dni">Número de DNI *</Label>
-                <Input
-                  id="dni"
-                  name="dni"
-                  value={formData.dni}
-                  onChange={handleChange}
-                  required
-                />
-              </div>
-
-              {/* Edad */}
-              <div className="space-y-2">
-                <Label htmlFor="age">Edad *</Label>
-                <Input
-                  id="age"
-                  name="age"
-                  type="number"
-                  min="18"
-                  max="100"
-                  value={formData.age}
-                  onChange={handleChange}
-                  required
-                />
-              </div>
-
-              {/* Teléfono */}
-              <div className="space-y-2">
-                <Label htmlFor="phone_number">Número de celular *</Label>
-                <Input
-                  id="phone_number"
-                  name="phone_number"
-                  value={formData.phone_number}
-                  onChange={handleChange}
-                  required
-                />
-              </div>
-
-              {/* Foto de perfil */}
-              <div className="space-y-2">
-                <Label>Foto del trabajador</Label>
-                <div className="flex items-center space-x-4">
-                  {profilePhotoPreview && (
-                    <div className="relative">
-                      <img 
-                        src={profilePhotoPreview} 
-                        alt="Preview" 
-                        className="w-16 h-16 rounded-full object-cover border"
-                      />
-                      <button 
-                        type="button"
-                        className="absolute -top-2 -right-2 bg-red-600 rounded-full p-0.5 text-white"
-                        onClick={() => {
-                          setProfilePhotoPreview(null);
-                          setProfilePhotoFile(null);
-                          setFormData(prev => ({ ...prev, profile_photo: "" }));
-                        }}
-                      >
-                        <X className="w-3 h-3" />
-                      </button>
-                    </div>
-                  )}
-                  <div className="flex-1">
-                    <Label 
-                      htmlFor="photo-upload" 
-                      className="flex items-center justify-center border border-dashed border-gray-300 rounded-md p-2 cursor-pointer hover:bg-gray-50"
-                    >
-                      <Upload className="mr-2 h-4 w-4" />
-                      <span className="text-sm">Subir foto</span>
-                    </Label>
-                    <Input
-                      id="photo-upload"
-                      type="file"
-                      accept="image/*"
-                      onChange={handleProfilePhotoChange}
-                      className="hidden"
-                    />
-                  </div>
-                </div>
-              </div>
-            </div>
+            {/* Foto de perfil */}
+            <ProfilePhotoUpload
+              initialPhoto={formData.profile_photo}
+              onPhotoChange={handleProfilePhotoChange}
+            />
 
             {/* Servicios */}
-            <div className="space-y-4">
-              <Label>Servicios que desea ofrecer *</Label>
-              <div className="grid grid-cols-2 sm:grid-cols-3 gap-3">
-                {serviceOptions.map((service) => (
-                  <div key={service.id} className="flex items-center space-x-2">
-                    <Checkbox 
-                      id={`service-${service.id}`}
-                      checked={formData.services.includes(service.id)}
-                      onCheckedChange={(checked) => 
-                        handleServiceChange(service.id, checked as boolean)
-                      }
-                    />
-                    <Label htmlFor={`service-${service.id}`} className="cursor-pointer">
-                      {service.label}
-                    </Label>
-                  </div>
-                ))}
-              </div>
-
-              {/* Campo para "Otro" servicio */}
-              {formData.services.includes('otro') && (
-                <div className="mt-3">
-                  <Label htmlFor="other_service">Especificar otro servicio *</Label>
-                  <Input
-                    id="other_service"
-                    name="other_service"
-                    value={formData.other_service}
-                    onChange={handleChange}
-                    placeholder="Especifica qué otro servicio ofreces"
-                    required
-                  />
-                </div>
-              )}
-            </div>
+            <ServiceSelector
+              selectedServices={formData.services}
+              otherService={formData.other_service}
+              onServiceChange={handleServiceChange}
+              onOtherServiceChange={(value) => setFormData(prev => ({ ...prev, other_service: value }))}
+            />
 
             {/* Descripción */}
             <div className="space-y-2">
-              <Label htmlFor="description">Descripción profesional o experiencia</Label>
+              <label htmlFor="description">Descripción profesional o experiencia</label>
               <Textarea
                 id="description"
                 name="description"
@@ -538,59 +395,12 @@ const ChamberFormPage = () => {
             </div>
 
             {/* Imágenes de portafolio */}
-            <div className="space-y-4">
-              <Label>Imágenes o ejemplos de trabajos anteriores (opcional)</Label>
-              
-              {/* Lista de imágenes seleccionadas */}
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 mt-4">
-                {formData.portfolio_images.map((image, index) => (
-                  <Card key={index} className="overflow-hidden">
-                    <img 
-                      src={image.preview} 
-                      alt={`Portfolio ${index}`} 
-                      className="w-full h-40 object-cover"
-                    />
-                    <CardContent className="p-3">
-                      <div className="flex justify-between items-center mb-2">
-                        <p className="text-sm font-medium">Descripción</p>
-                        <button 
-                          type="button"
-                          onClick={() => removePortfolioImage(index)}
-                          className="text-red-600 hover:text-red-800"
-                        >
-                          <X className="h-4 w-4" />
-                        </button>
-                      </div>
-                      <Input
-                        value={image.description}
-                        onChange={(e) => updatePortfolioImageDescription(index, e.target.value)}
-                        placeholder="Describe esta imagen"
-                        className="text-sm"
-                      />
-                    </CardContent>
-                  </Card>
-                ))}
-              </div>
-              
-              {/* Botón para agregar más imágenes */}
-              <div className="mt-4">
-                <Label 
-                  htmlFor="portfolio-upload" 
-                  className="flex items-center justify-center border border-dashed border-gray-300 rounded-md p-4 cursor-pointer hover:bg-gray-50"
-                >
-                  <Plus className="mr-2 h-5 w-5 text-gray-500" />
-                  <span>Agregar imágenes de trabajos</span>
-                </Label>
-                <Input
-                  id="portfolio-upload"
-                  type="file"
-                  accept="image/*"
-                  multiple
-                  onChange={handlePortfolioImageChange}
-                  className="hidden"
-                />
-              </div>
-            </div>
+            <PortfolioUploader
+              images={formData.portfolio_images}
+              onAddImages={handlePortfolioImageChange}
+              onUpdateDescription={updatePortfolioImageDescription}
+              onRemoveImage={removePortfolioImage}
+            />
 
             {/* Botón de envío */}
             <Button 
