@@ -8,13 +8,9 @@ import { useAuth } from "@/contexts/AuthContext";
 const BecomeProvider = () => {
   const { user } = useAuth();
   const navigate = useNavigate();
-
-  const handleChamberButtonClick = () => {
-    if (!user) {
-      navigate("/login-required");
-    } else {
-      navigate("/crear-chamber");
-    }
+  
+  const handleContactClick = () => {
+    window.open("https://wa.link/kajg2u", "_blank");
   };
   
   return (
@@ -218,9 +214,14 @@ const BecomeProvider = () => {
           <p className="text-xl text-gray-700 mb-10 max-w-2xl mx-auto">
             Únete a nuestra comunidad de profesionales y expande tu negocio.
           </p>
-          <Button onClick={handleChamberButtonClick} size="lg" className="btn-primary text-lg px-10 py-6 shadow-lg hover:shadow-xl">
-            Quiero ser chamber
-          </Button>
+          <div className="flex flex-col md:flex-row justify-center gap-4">
+            <Button onClick={handleContactClick} size="lg" className="btn-primary text-lg px-10 py-6 shadow-lg hover:shadow-xl">
+              Contactar para ser chamber
+            </Button>
+            <Button onClick={handleContactClick} size="lg" variant="outline" className="text-lg px-10 py-6 shadow-lg hover:shadow-xl">
+              Soy empresa, quiero contactarme
+            </Button>
+          </div>
         </div>
       </section>
     </Layout>
