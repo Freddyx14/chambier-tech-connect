@@ -59,9 +59,6 @@ const Header = () => {
                   <DropdownMenuItem asChild>
                     <Link to="/perfil" className="cursor-pointer">Mi perfil</Link>
                   </DropdownMenuItem>
-                  <DropdownMenuItem asChild>
-                    <Link to="/crear-chamber" className="cursor-pointer">Crear perfil profesional</Link>
-                  </DropdownMenuItem>
                   <DropdownMenuSeparator />
                   <DropdownMenuItem onClick={signOut} className="cursor-pointer text-destructive focus:text-destructive">
                     Cerrar sesión
@@ -118,7 +115,6 @@ const Header = () => {
               {user ? (
                 <>
                   <Link to="/perfil" className="block font-medium text-gray-700 hover:text-chambier-bright">Mi perfil</Link>
-                  <Link to="/crear-chamber" className="block font-medium text-gray-700 hover:text-chambier-bright">Crear perfil profesional</Link>
                   <Button onClick={signOut} variant="destructive" className="w-full mt-2">
                     Cerrar sesión
                   </Button>
