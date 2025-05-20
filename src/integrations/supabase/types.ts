@@ -9,6 +9,86 @@ export type Json =
 export type Database = {
   public: {
     Tables: {
+      chamber_portfolio: {
+        Row: {
+          chamber_id: string
+          created_at: string
+          description: string | null
+          id: string
+          image_url: string
+        }
+        Insert: {
+          chamber_id: string
+          created_at?: string
+          description?: string | null
+          id?: string
+          image_url: string
+        }
+        Update: {
+          chamber_id?: string
+          created_at?: string
+          description?: string | null
+          id?: string
+          image_url?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "chamber_portfolio_chamber_id_fkey"
+            columns: ["chamber_id"]
+            isOneToOne: false
+            referencedRelation: "chamber_profiles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      chamber_profiles: {
+        Row: {
+          age: number
+          approved: boolean
+          created_at: string
+          description: string | null
+          dni: string
+          first_name: string
+          id: string
+          last_name: string
+          other_service: string | null
+          phone_number: string
+          profile_photo: string | null
+          services: Database["public"]["Enums"]["service_type"][]
+          user_id: string
+        }
+        Insert: {
+          age: number
+          approved?: boolean
+          created_at?: string
+          description?: string | null
+          dni: string
+          first_name: string
+          id?: string
+          last_name: string
+          other_service?: string | null
+          phone_number: string
+          profile_photo?: string | null
+          services?: Database["public"]["Enums"]["service_type"][]
+          user_id: string
+        }
+        Update: {
+          age?: number
+          approved?: boolean
+          created_at?: string
+          description?: string | null
+          dni?: string
+          first_name?: string
+          id?: string
+          last_name?: string
+          other_service?: string | null
+          phone_number?: string
+          profile_photo?: string | null
+          services?: Database["public"]["Enums"]["service_type"][]
+          user_id?: string
+        }
+        Relationships: []
+      }
       phone_verification_codes: {
         Row: {
           code: string
@@ -211,6 +291,16 @@ export type Database = {
         | "Limpiador"
         | "Técnico informático"
         | "Técnico de aire acondicionado"
+      service_type:
+        | "plomero"
+        | "jardinero"
+        | "electricista"
+        | "limpieza"
+        | "pintura"
+        | "cerrajero"
+        | "ensamblador"
+        | "soldador"
+        | "otro"
     }
     CompositeTypes: {
       [_ in never]: never
@@ -337,6 +427,17 @@ export const Constants = {
         "Limpiador",
         "Técnico informático",
         "Técnico de aire acondicionado",
+      ],
+      service_type: [
+        "plomero",
+        "jardinero",
+        "electricista",
+        "limpieza",
+        "pintura",
+        "cerrajero",
+        "ensamblador",
+        "soldador",
+        "otro",
       ],
     },
   },

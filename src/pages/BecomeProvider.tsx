@@ -1,26 +1,38 @@
 
 import Layout from "@/components/Layout";
 import { Button } from "@/components/ui/button";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { Check, Award, HandHelping, Star, UserCheck, Rocket } from "lucide-react";
+import { useAuth } from "@/contexts/AuthContext";
 
 const BecomeProvider = () => {
+  const { user } = useAuth();
+  const navigate = useNavigate();
+
+  const handleChamberButtonClick = () => {
+    if (!user) {
+      navigate("/login-required");
+    } else {
+      navigate("/crear-chamber");
+    }
+  };
+  
   return (
     <Layout>
       {/* Hero Section */}
-      <section className="py-16 md:py-24 chambier-gradient relative overflow-hidden">
+      <section className="py-8 md:py-12 chambier-gradient relative overflow-hidden">
         <div className="container mx-auto px-4 text-center relative z-10">
           <h1 className="text-3xl md:text-5xl font-bold text-gray-800 mb-6">
             Más clientes, menos vueltas
           </h1>
-          <p className="text-xl md:text-2xl text-gray-700 mb-6 max-w-3xl mx-auto">
+          <p className="text-xl md:text-2xl text-gray-700 mb-4 max-w-3xl mx-auto">
             Hazte visible con Chambier
           </p>
-          <div className="mt-10">
+          <div className="mt-4">
             <img 
               src="https://img.freepik.com/foto-gratis/concepto-entrega-guapo-hombre-africano-entrega-america-cruzo-brazos-sobre-aislado-fondo-estudio-gris-espacio-copia_1258-1277.jpg?semt=ais_hybrid&w=740" 
               alt="Profesional feliz" 
-              className="rounded-lg shadow-xl max-w-4xl mx-auto"
+              className="rounded-lg shadow-xl max-w-md mx-auto h-48 object-cover"
             />
           </div>
         </div>
@@ -206,11 +218,9 @@ const BecomeProvider = () => {
           <p className="text-xl text-gray-700 mb-10 max-w-2xl mx-auto">
             Únete a nuestra comunidad de profesionales y expande tu negocio.
           </p>
-          <Link to="/register">
-            <Button size="lg" className="btn-primary text-lg px-10 py-6 shadow-lg hover:shadow-xl">
-              Quiero ser chamber
-            </Button>
-          </Link>
+          <Button onClick={handleChamberButtonClick} size="lg" className="btn-primary text-lg px-10 py-6 shadow-lg hover:shadow-xl">
+            Quiero ser chamber
+          </Button>
         </div>
       </section>
     </Layout>

@@ -14,6 +14,10 @@ import NotFound from "./pages/NotFound";
 import BecomeProvider from "./pages/BecomeProvider";
 import RecoverPassword from "./pages/RecoverPassword";
 import ScrollToTop from "./components/ScrollToTop";
+import { AuthProvider } from "./contexts/AuthContext";
+import ProfilePage from "./pages/ProfilePage";
+import ChamberFormPage from "./pages/ChamberFormPage";
+import LoginRequiredPage from "./pages/LoginRequiredPage";
 
 // Create a new QueryClient instance
 const queryClient = new QueryClient();
@@ -22,22 +26,27 @@ const App = () => (
   <React.StrictMode>
     <QueryClientProvider client={queryClient}>
       <TooltipProvider>
-        <Toaster />
-        <Sonner />
-        <BrowserRouter>
-          <ScrollToTop />
-          <Routes>
-            <Route path="/" element={<HomePage />} />
-            <Route path="/search" element={<SearchPage />} />
-            <Route path="/login" element={<Login />} />
-            <Route path="/register" element={<Register />} />
-            <Route path="/recuperar-password" element={<RecoverPassword />} />
-            <Route path="/profesional/:id" element={<ProfessionalDetail />} />
-            <Route path="/ser-chamber" element={<BecomeProvider />} />
-            {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
-            <Route path="*" element={<NotFound />} />
-          </Routes>
-        </BrowserRouter>
+        <AuthProvider>
+          <Toaster />
+          <Sonner />
+          <BrowserRouter>
+            <ScrollToTop />
+            <Routes>
+              <Route path="/" element={<HomePage />} />
+              <Route path="/search" element={<SearchPage />} />
+              <Route path="/login" element={<Login />} />
+              <Route path="/register" element={<Register />} />
+              <Route path="/recuperar-password" element={<RecoverPassword />} />
+              <Route path="/profesional/:id" element={<ProfessionalDetail />} />
+              <Route path="/ser-chamber" element={<BecomeProvider />} />
+              <Route path="/perfil" element={<ProfilePage />} />
+              <Route path="/crear-chamber" element={<ChamberFormPage />} />
+              <Route path="/login-required" element={<LoginRequiredPage />} />
+              {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
+              <Route path="*" element={<NotFound />} />
+            </Routes>
+          </BrowserRouter>
+        </AuthProvider>
       </TooltipProvider>
     </QueryClientProvider>
   </React.StrictMode>
