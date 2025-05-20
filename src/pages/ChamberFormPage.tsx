@@ -41,7 +41,7 @@ const ChamberFormPage = () => {
     dni: "",
     age: "",
     phone_number: "",
-    services: [],
+    services: [] as ServiceType[],
     other_service: "",
     description: "",
     portfolio_images: []
@@ -83,7 +83,7 @@ const ChamberFormPage = () => {
         dni: chamberData.dni || "",
         age: chamberData.age?.toString() || "",
         phone_number: chamberData.phone_number || "",
-        services: chamberData.services || [],
+        services: chamberData.services as ServiceType[] || [],
         other_service: chamberData.other_service || "",
         description: chamberData.description || "",
         profile_photo: chamberData.profile_photo || "",
@@ -251,7 +251,7 @@ const ChamberFormPage = () => {
         profilePhotoUrl = await uploadFile(profilePhotoFile, 'profiles');
       }
       
-      // Datos del chamber para la base de datos - corregido para asegurar que services es del tipo correcto
+      // Datos del chamber para la base de datos - asegurándonos que services es del tipo correcto
       const chamberData = {
         user_id: user.id,
         first_name: formData.first_name,
@@ -259,7 +259,7 @@ const ChamberFormPage = () => {
         dni: formData.dni,
         age: parseInt(formData.age),
         phone_number: formData.phone_number,
-        services: formData.services as ServiceType[], // Aseguramos que el tipo es correcto
+        services: formData.services as ServiceType[],
         other_service: formData.services.includes('otro') ? formData.other_service : null,
         description: formData.description,
         profile_photo: profilePhotoUrl
