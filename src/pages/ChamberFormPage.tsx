@@ -15,6 +15,10 @@ import ProfilePhotoUpload from "@/components/chamber/ProfilePhotoUpload";
 import ServiceSelector, { ServiceType, serviceOptions } from "@/components/chamber/ServiceSelector";
 import PortfolioUploader, { PortfolioImage } from "@/components/chamber/PortfolioUploader";
 
+// Define los tipos para la base de datos
+import { Database } from "@/integrations/supabase/types";
+type ChamberServiceType = Database["public"]["Enums"]["service_type"];
+
 interface FormData {
   first_name: string;
   last_name: string;
@@ -201,20 +205,26 @@ const ChamberFormPage = () => {
     const fileName = `${Date.now()}.${fileExt}`;
     const filePath = `${path}/${fileName}`;
 
-    const { error: uploadError } = await supabase.storage
-      .from('chamber_images')
-      .upload(filePath, file);
+    try {
+      const { error: uploadError } = await supabase.storage
+        .from('chamber_images')
+        .upload(filePath, file);
 
-    if (uploadError) {
-      throw uploadError;
+      if (uploadError) {
+        console.error("Error uploading file:", uploadError);
+        throw uploadError;
+      }
+
+      // Obtener URL pública
+      const { data: urlData } = supabase.storage
+        .from('chamber_images')
+        .getPublicUrl(filePath);
+
+      return urlData.publicUrl;
+    } catch (error) {
+      console.error("Upload file error:", error);
+      throw new Error("Error al subir archivo");
     }
-
-    // Obtener URL pública
-    const { data: urlData } = supabase.storage
-      .from('chamber_images')
-      .getPublicUrl(filePath);
-
-    return urlData.publicUrl;
   };
 
   // Enviar formulario
@@ -244,6 +254,7 @@ const ChamberFormPage = () => {
     setIsSubmitting(true);
 
     try {
+      console.log("Iniciando envío del formulario...");
       let profilePhotoUrl = formData.profile_photo || "";
       
       // Subir foto de perfil si se seleccionó una nueva
@@ -251,7 +262,12 @@ const ChamberFormPage = () => {
         profilePhotoUrl = await uploadFile(profilePhotoFile, 'profiles');
       }
       
-      // Datos del chamber para la base de datos - asegurándonos que services es del tipo correcto
+      // Convertir servicios al tipo esperado por Supabase
+      const dbServices: ChamberServiceType[] = formData.services.map(service => 
+        service as unknown as ChamberServiceType
+      );
+      
+      // Datos del chamber para la base de datos
       const chamberData = {
         user_id: user.id,
         first_name: formData.first_name,
@@ -259,37 +275,48 @@ const ChamberFormPage = () => {
         dni: formData.dni,
         age: parseInt(formData.age),
         phone_number: formData.phone_number,
-        services: formData.services as ServiceType[],
-        other_service: formData.services.includes('otro') ? formData.other_service : null,
+        services: dbServices,
+        other_service: formData.services.includes('otro' as ServiceType) ? formData.other_service : null,
         description: formData.description,
         profile_photo: profilePhotoUrl
       };
 
+      console.log("Datos a guardar:", chamberData);
       let chamberId = chamberProfileId;
       
       // Crear o actualizar perfil de chamber
       if (isEditMode && chamberProfileId) {
         // Actualizar perfil existente
+        console.log("Actualizando perfil existente...");
         const { error: updateError } = await supabase
           .from('chamber_profiles')
           .update(chamberData)
           .eq('id', chamberProfileId);
 
-        if (updateError) throw updateError;
+        if (updateError) {
+          console.error("Error al actualizar:", updateError);
+          throw updateError;
+        }
       } else {
         // Crear nuevo perfil
+        console.log("Creando nuevo perfil...");
         const { data: insertData, error: insertError } = await supabase
           .from('chamber_profiles')
           .insert(chamberData)
           .select('id')
           .single();
 
-        if (insertError) throw insertError;
+        if (insertError) {
+          console.error("Error al insertar:", insertError);
+          throw insertError;
+        }
         chamberId = insertData.id;
+        console.log("Perfil creado con ID:", chamberId);
       }
 
       // Procesar imágenes del portafolio
       if (chamberId) {
+        console.log("Procesando imágenes del portfolio...");
         // Para cada imagen en el portafolio
         for (const image of formData.portfolio_images) {
           // Si es una imagen existente con ID
