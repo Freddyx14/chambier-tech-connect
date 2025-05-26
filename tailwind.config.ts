@@ -63,13 +63,21 @@ export default {
 					border: 'hsl(var(--sidebar-border))',
 					ring: 'hsl(var(--sidebar-ring))'
 				},
-        // Chambier custom colors
+        // Nueva paleta de branding Chambier
         chambier: {
-          lightest: '#EFFFFF',
-          lighter: '#DFFFFF',
-          light: '#CFFFFF',
-          medium: '#BFFFFF',
-          bright: '#00F6FF',
+          primary: '#0077C2',        // Azul cobalto
+          secondary: '#F4B400',      // Amarillo mostaza suave
+          accent: '#00A896',         // Verde azulado
+          background: '#F7F7F7',     // Gris claro
+          text: '#333333',           // Gris oscuro
+          white: '#FFFFFF',          // Blanco puro
+          // Variaciones tonales para mayor versatilidad
+          'primary-light': '#3399D4',
+          'primary-dark': '#005A91',
+          'secondary-light': '#F6C942',
+          'secondary-dark': '#D49A00',
+          'accent-light': '#2BC4BA',
+          'accent-dark': '#007A70',
         }
 			},
 			borderRadius: {
@@ -77,6 +85,11 @@ export default {
 				md: 'calc(var(--radius) - 2px)',
 				sm: 'calc(var(--radius) - 4px)'
 			},
+			fontFamily: {
+        // Tipografía moderna y legible según la propuesta
+        'sans': ['Inter', 'system-ui', 'sans-serif'],
+        'heading': ['Poppins', 'system-ui', 'sans-serif'],
+      },
 			keyframes: {
 				'accordion-down': {
 					from: {

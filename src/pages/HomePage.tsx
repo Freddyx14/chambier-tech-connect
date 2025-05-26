@@ -1,3 +1,4 @@
+
 import { Link } from "react-router-dom";
 import Layout from "@/components/Layout";
 import Hero from "@/components/Hero";
@@ -49,20 +50,20 @@ const HomePage = () => {
       <Hero />
 
       {/* Popular Categories */}
-      <section className="py-16 bg-white">
+      <section className="py-20 bg-white">
         <div className="container mx-auto px-4">
-          <div className="text-center mb-12">
-            <h2 className="text-3xl font-bold text-gray-800">Explora por Categorías</h2>
-            <p className="mt-2 text-gray-600">Encuentra el servicio perfecto para tus necesidades</p>
+          <div className="text-center mb-16">
+            <h2 className="text-4xl font-bold text-chambier-text mb-4">Explora por Categorías</h2>
+            <p className="text-lg text-gray-600 max-w-2xl mx-auto">Encuentra el servicio perfecto para tus necesidades con profesionales verificados</p>
           </div>
 
           <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-6">
             {serviceCategories.map((category) => (
               <Link to={`/search?category=${category.id}`} key={category.id}>
-                <div className="bg-chambier-lightest hover:bg-chambier-lighter transition-colors rounded-lg p-6 text-center card-shadow">
-                  <div className="text-4xl mb-3">{category.icon}</div>
-                  <h3 className="font-medium text-gray-800">{category.name}</h3>
-                  <p className="text-sm text-gray-500 mt-1">{category.count} profesionales</p>
+                <div className="bg-white hover:bg-gray-50 transition-all duration-300 rounded-xl p-6 text-center card-shadow hover:scale-105">
+                  <div className="text-4xl mb-4">{category.icon}</div>
+                  <h3 className="font-semibold text-chambier-text text-sm">{category.name}</h3>
+                  <p className="text-xs text-gray-500 mt-2">{category.count} profesionales</p>
                 </div>
               </Link>
             ))}
@@ -71,90 +72,104 @@ const HomePage = () => {
       </section>
 
       {/* How It Works */}
-      <section className="py-16 bg-chambier-lightest">
+      <section className="py-20 bg-chambier-background">
         <div className="container mx-auto px-4">
-          <div className="text-center mb-12">
-            <h2 className="text-3xl font-bold text-gray-800">¿Cómo Funciona?</h2>
-            <p className="mt-2 text-gray-600">Tres simples pasos para encontrar al profesional perfecto</p>
+          <div className="text-center mb-16">
+            <h2 className="text-4xl font-bold text-chambier-text mb-4">¿Cómo Funciona?</h2>
+            <p className="text-lg text-gray-600 max-w-2xl mx-auto">Tres simples pasos para encontrar al profesional perfecto</p>
           </div>
 
-          <div className="grid md:grid-cols-3 gap-10">
-            <div className="text-center p-6">
-              <div className="w-16 h-16 bg-chambier-bright rounded-full flex items-center justify-center text-white text-xl font-bold mx-auto">1</div>
-              <h3 className="mt-4 text-xl font-semibold text-gray-800">Busca un Servicio</h3>
-              <p className="mt-2 text-gray-600">Explora categorías o busca servicios específicos según tus necesidades.</p>
+          <div className="grid md:grid-cols-3 gap-12">
+            <div className="text-center">
+              <div className="w-20 h-20 bg-chambier-primary rounded-full flex items-center justify-center text-white text-2xl font-bold mx-auto mb-6 shadow-lg">1</div>
+              <h3 className="text-2xl font-semibold text-chambier-text mb-4">Busca un Servicio</h3>
+              <p className="text-gray-600 leading-relaxed">Explora categorías o busca servicios específicos según tus necesidades. Filtra por ubicación y especialidad.</p>
             </div>
 
-            <div className="text-center p-6">
-              <div className="w-16 h-16 bg-chambier-bright rounded-full flex items-center justify-center text-white text-xl font-bold mx-auto">2</div>
-              <h3 className="mt-4 text-xl font-semibold text-gray-800">Compara Profesionales</h3>
-              <p className="mt-2 text-gray-600">Revisa perfiles, calificaciones y trabajos anteriores para tomar la mejor decisión.</p>
+            <div className="text-center">
+              <div className="w-20 h-20 bg-chambier-accent rounded-full flex items-center justify-center text-white text-2xl font-bold mx-auto mb-6 shadow-lg">2</div>
+              <h3 className="text-2xl font-semibold text-chambier-text mb-4">Compara Profesionales</h3>
+              <p className="text-gray-600 leading-relaxed">Revisa perfiles, calificaciones y trabajos anteriores para tomar la mejor decisión. Lee reseñas reales.</p>
             </div>
 
-            <div className="text-center p-6">
-              <div className="w-16 h-16 bg-chambier-bright rounded-full flex items-center justify-center text-white text-xl font-bold mx-auto">3</div>
-              <h3 className="mt-4 text-xl font-semibold text-gray-800">Contacta y Contrata</h3>
-              <p className="mt-2 text-gray-600">Comunícate directamente con el profesional para acordar detalles y precios.</p>
+            <div className="text-center">
+              <div className="w-20 h-20 bg-chambier-secondary rounded-full flex items-center justify-center text-chambier-text text-2xl font-bold mx-auto mb-6 shadow-lg">3</div>
+              <h3 className="text-2xl font-semibold text-chambier-text mb-4">Contacta y Contrata</h3>
+              <p className="text-gray-600 leading-relaxed">Comunícate directamente con el profesional para acordar detalles, horarios y precios de forma segura.</p>
             </div>
           </div>
         </div>
       </section>
 
       {/* Featured Professionals */}
-      <section className="py-16 bg-white">
+      <section className="py-20 bg-white">
         <div className="container mx-auto px-4">
-          <div className="text-center mb-12">
-            <h2 className="text-3xl font-bold text-gray-800">Profesionales Destacados</h2>
-            <p className="mt-2 text-gray-600">Conoce a algunos de nuestros mejores profesionales</p>
+          <div className="text-center mb-16">
+            <h2 className="text-4xl font-bold text-chambier-text mb-4">Profesionales Destacados</h2>
+            <p className="text-lg text-gray-600 max-w-2xl mx-auto">Conoce a algunos de nuestros mejores profesionales verificados</p>
           </div>
 
-          <div className="grid grid-cols-2 md:grid-cols-4 gap-6">
+          <div className="grid grid-cols-2 md:grid-cols-4 gap-8">
             {featuredProfessionals.map((pro) => (
               <Link to={`/profesional/${pro.id}`} key={pro.id}>
-                <div className="bg-white rounded-lg overflow-hidden text-center card-shadow">
-                  <div className="p-4">
+                <div className="bg-white rounded-xl overflow-hidden text-center card-shadow hover:scale-105 transition-all duration-300">
+                  <div className="p-6">
                     <img
                       src={pro.profileImage}
                       alt={pro.name}
-                      className="w-24 h-24 rounded-full object-cover mx-auto border-2 border-chambier-lightest"
+                      className="w-28 h-28 rounded-full object-cover mx-auto border-4 border-chambier-background shadow-sm"
                     />
-                    <h3 className="mt-3 font-semibold text-gray-800">{pro.name}</h3>
-                    <p className="text-chambier-bright">{pro.profession}</p>
+                    <h3 className="mt-4 font-semibold text-chambier-text text-lg">{pro.name}</h3>
+                    <p className="text-chambier-primary font-medium">{pro.profession}</p>
                   </div>
                 </div>
               </Link>
             ))}
           </div>
 
-          <div className="text-center mt-10">
+          <div className="text-center mt-12">
             <Link to="/search">
-              <Button className="btn-primary">Ver Todos los Profesionales</Button>
+              <Button className="btn-primary text-lg px-8 py-4">Ver Todos los Profesionales</Button>
             </Link>
           </div>
         </div>
       </section>
 
       {/* Join As Professional */}
-      <section className="py-16 chambier-gradient">
+      <section className="py-20 chambier-gradient">
         <div className="container mx-auto px-4">
           <div className="md:flex md:items-center md:justify-between">
             <div className="md:w-1/2">
-              <h2 className="text-3xl font-bold text-gray-800">¿Eres un profesional?</h2>
-              <p className="mt-4 text-lg text-gray-700">
+              <h2 className="text-4xl font-bold text-white mb-6">¿Eres un profesional?</h2>
+              <p className="text-xl text-white/90 leading-relaxed mb-8">
                 Únete a Chambier y empieza a conseguir nuevos clientes. Crea tu perfil, muestra tu trabajo y construye tu reputación en línea.
               </p>
-              <div className="mt-6">
-                <Link to="/ser-chamber">
-                  <Button className="btn-primary">Conviértete en un chamber</Button>
-                </Link>
+              <div className="space-y-4 mb-8">
+                <div className="flex items-center text-white/90">
+                  <div className="w-2 h-2 bg-chambier-secondary rounded-full mr-3"></div>
+                  <span>Acceso a miles de clientes potenciales</span>
+                </div>
+                <div className="flex items-center text-white/90">
+                  <div className="w-2 h-2 bg-chambier-secondary rounded-full mr-3"></div>
+                  <span>Gestiona tu agenda y servicios fácilmente</span>
+                </div>
+                <div className="flex items-center text-white/90">
+                  <div className="w-2 h-2 bg-chambier-secondary rounded-full mr-3"></div>
+                  <span>Recibe pagos de forma segura</span>
+                </div>
               </div>
+              <Link to="/ser-chamber">
+                <Button className="bg-white text-chambier-primary hover:bg-gray-100 font-semibold text-lg px-8 py-4 shadow-lg">
+                  Conviértete en un chamber
+                </Button>
+              </Link>
             </div>
-            <div className="mt-10 md:mt-0 md:w-1/2 md:text-right">
+            <div className="mt-12 md:mt-0 md:w-1/2 md:text-right">
               <img
                 src="https://images.unsplash.com/photo-1580893246395-52aead8960dc?q=80&w=2874&auto=format&fit=crop"
-                alt="Profesional"
-                className="rounded-lg mx-auto md:ml-auto md:mr-0 shadow-lg"
-                style={{ maxWidth: "400px" }}
+                alt="Profesional trabajando"
+                className="rounded-2xl mx-auto md:ml-auto md:mr-0 shadow-2xl"
+                style={{ maxWidth: "450px" }}
               />
             </div>
           </div>
