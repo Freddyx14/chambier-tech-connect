@@ -10,6 +10,10 @@ const BecomeProvider = () => {
   const navigate = useNavigate();
   
   const handleContactClick = () => {
+    window.open("https://wa.link/y5v8or", "_blank");
+  };
+  
+  const handleCompanyContactClick = () => {
     window.open("https://wa.link/kajg2u", "_blank");
   };
   
@@ -218,7 +222,7 @@ const BecomeProvider = () => {
             <Button onClick={handleContactClick} size="lg" className="btn-primary text-lg px-10 py-6 shadow-lg hover:shadow-xl">
               Contactar para ser chamber
             </Button>
-            <Button onClick={handleContactClick} size="lg" variant="outline" className="text-lg px-10 py-6 shadow-lg hover:shadow-xl">
+            <Button onClick={handleCompanyContactClick} size="lg" variant="outline" className="text-lg px-10 py-6 shadow-lg hover:shadow-xl">
               Soy empresa, quiero contactarme
             </Button>
           </div>
