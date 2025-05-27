@@ -1,4 +1,3 @@
-
 import Layout from "@/components/Layout";
 import { Button } from "@/components/ui/button";
 import { Link, useNavigate } from "react-router-dom";
@@ -14,7 +13,7 @@ const BecomeProvider = () => {
   };
   
   const handleCompanyContactClick = () => {
-    window.open("https://wa.link/kajg2u", "_blank");
+    window.open("https://wa.link/9pkrr2", "_blank");
   };
   
   return (
