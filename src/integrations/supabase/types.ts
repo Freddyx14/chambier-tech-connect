@@ -9,254 +9,79 @@ export type Json =
 export type Database = {
   public: {
     Tables: {
-      chamber_portfolio: {
+      resenas: {
         Row: {
-          chamber_id: string
-          created_at: string
-          description: string | null
+          comentario: string
+          estrellas: number
+          fecha: string
           id: string
-          image_url: string
+          id_trabajador: string
+          nombre_cliente: string | null
         }
         Insert: {
-          chamber_id: string
-          created_at?: string
-          description?: string | null
+          comentario: string
+          estrellas: number
+          fecha?: string
           id?: string
-          image_url: string
+          id_trabajador: string
+          nombre_cliente?: string | null
         }
         Update: {
-          chamber_id?: string
-          created_at?: string
-          description?: string | null
+          comentario?: string
+          estrellas?: number
+          fecha?: string
           id?: string
-          image_url?: string
+          id_trabajador?: string
+          nombre_cliente?: string | null
         }
         Relationships: [
           {
-            foreignKeyName: "chamber_portfolio_chamber_id_fkey"
-            columns: ["chamber_id"]
+            foreignKeyName: "resenas_id_trabajador_fkey"
+            columns: ["id_trabajador"]
             isOneToOne: false
-            referencedRelation: "chamber_profiles"
+            referencedRelation: "trabajadores"
             referencedColumns: ["id"]
           },
         ]
       }
-      chamber_profiles: {
+      trabajadores: {
         Row: {
-          age: number
-          approved: boolean
+          apellido: string
           created_at: string
-          description: string | null
-          dni: string
-          first_name: string
+          descripcion: string | null
+          foto_perfil: string | null
           id: string
-          last_name: string
-          other_service: string | null
-          phone_number: string
-          profile_photo: string | null
-          services: Database["public"]["Enums"]["service_type"][]
-          user_id: string
-        }
-        Insert: {
-          age: number
-          approved?: boolean
-          created_at?: string
-          description?: string | null
-          dni: string
-          first_name: string
-          id?: string
-          last_name: string
-          other_service?: string | null
-          phone_number: string
-          profile_photo?: string | null
-          services?: Database["public"]["Enums"]["service_type"][]
-          user_id: string
-        }
-        Update: {
-          age?: number
-          approved?: boolean
-          created_at?: string
-          description?: string | null
-          dni?: string
-          first_name?: string
-          id?: string
-          last_name?: string
-          other_service?: string | null
-          phone_number?: string
-          profile_photo?: string | null
-          services?: Database["public"]["Enums"]["service_type"][]
-          user_id?: string
-        }
-        Relationships: []
-      }
-      phone_verification_codes: {
-        Row: {
-          code: string
-          created_at: string
-          expires_at: string
-          id: string
-          phone_number: string
-          used: boolean
-        }
-        Insert: {
-          code: string
-          created_at?: string
-          expires_at?: string
-          id?: string
-          phone_number: string
-          used?: boolean
-        }
-        Update: {
-          code?: string
-          created_at?: string
-          expires_at?: string
-          id?: string
-          phone_number?: string
-          used?: boolean
-        }
-        Relationships: []
-      }
-      portfolio_items: {
-        Row: {
-          created_at: string | null
-          description: string | null
-          id: string
-          image_url: string | null
-          professional_id: string | null
-          title: string
-        }
-        Insert: {
-          created_at?: string | null
-          description?: string | null
-          id?: string
-          image_url?: string | null
-          professional_id?: string | null
-          title: string
-        }
-        Update: {
-          created_at?: string | null
-          description?: string | null
-          id?: string
-          image_url?: string | null
-          professional_id?: string | null
-          title?: string
-        }
-        Relationships: [
-          {
-            foreignKeyName: "portfolio_items_professional_id_fkey"
-            columns: ["professional_id"]
-            isOneToOne: false
-            referencedRelation: "professionals"
-            referencedColumns: ["id"]
-          },
-        ]
-      }
-      professionals: {
-        Row: {
-          contact_email: string | null
-          contact_phone: string | null
-          contact_whatsapp: string | null
-          created_at: string | null
-          description: string | null
-          featured: boolean | null
-          id: string
-          name: string
-          profession: Database["public"]["Enums"]["profession_type"]
-          profile_image: string | null
-          rating: number | null
-          review_count: number | null
-          skills: string[] | null
-          updated_at: string | null
-        }
-        Insert: {
-          contact_email?: string | null
-          contact_phone?: string | null
-          contact_whatsapp?: string | null
-          created_at?: string | null
-          description?: string | null
-          featured?: boolean | null
-          id?: string
-          name: string
-          profession: Database["public"]["Enums"]["profession_type"]
-          profile_image?: string | null
-          rating?: number | null
-          review_count?: number | null
-          skills?: string[] | null
-          updated_at?: string | null
-        }
-        Update: {
-          contact_email?: string | null
-          contact_phone?: string | null
-          contact_whatsapp?: string | null
-          created_at?: string | null
-          description?: string | null
-          featured?: boolean | null
-          id?: string
-          name?: string
-          profession?: Database["public"]["Enums"]["profession_type"]
-          profile_image?: string | null
-          rating?: number | null
-          review_count?: number | null
-          skills?: string[] | null
-          updated_at?: string | null
-        }
-        Relationships: []
-      }
-      reviews: {
-        Row: {
-          comment: string | null
-          created_at: string | null
-          id: string
-          professional_id: string | null
-          rating: number
-          user_name: string
-        }
-        Insert: {
-          comment?: string | null
-          created_at?: string | null
-          id?: string
-          professional_id?: string | null
-          rating: number
-          user_name: string
-        }
-        Update: {
-          comment?: string | null
-          created_at?: string | null
-          id?: string
-          professional_id?: string | null
-          rating?: number
-          user_name?: string
-        }
-        Relationships: [
-          {
-            foreignKeyName: "reviews_professional_id_fkey"
-            columns: ["professional_id"]
-            isOneToOne: false
-            referencedRelation: "professionals"
-            referencedColumns: ["id"]
-          },
-        ]
-      }
-      user_profiles: {
-        Row: {
-          created_at: string
-          email: string | null
-          id: string
-          phone_number: string | null
+          imagenes_trabajos: string[] | null
+          nombre: string
+          numero_celular: string | null
+          profesiones: string[]
+          promedio_estrellas: number | null
           updated_at: string
         }
         Insert: {
+          apellido: string
           created_at?: string
-          email?: string | null
-          id: string
-          phone_number?: string | null
+          descripcion?: string | null
+          foto_perfil?: string | null
+          id?: string
+          imagenes_trabajos?: string[] | null
+          nombre: string
+          numero_celular?: string | null
+          profesiones?: string[]
+          promedio_estrellas?: number | null
           updated_at?: string
         }
         Update: {
+          apellido?: string
           created_at?: string
-          email?: string | null
+          descripcion?: string | null
+          foto_perfil?: string | null
           id?: string
-          phone_number?: string | null
+          imagenes_trabajos?: string[] | null
+          nombre?: string
+          numero_celular?: string | null
+          profesiones?: string[]
+          promedio_estrellas?: number | null
           updated_at?: string
         }
         Relationships: []
@@ -266,41 +91,10 @@ export type Database = {
       [_ in never]: never
     }
     Functions: {
-      generate_phone_code: {
-        Args: { phone: string }
-        Returns: string
-      }
-      link_phone_to_profile: {
-        Args: { user_uuid: string; phone: string }
-        Returns: boolean
-      }
-      verify_phone_code: {
-        Args: { phone: string; verification_code: string }
-        Returns: string
-      }
+      [_ in never]: never
     }
     Enums: {
-      profession_type:
-        | "Plomero"
-        | "Electricista"
-        | "Jardinero"
-        | "Carpintero"
-        | "Pintor"
-        | "Albañil"
-        | "Cerrajero"
-        | "Limpiador"
-        | "Técnico informático"
-        | "Técnico de aire acondicionado"
-      service_type:
-        | "plomero"
-        | "jardinero"
-        | "electricista"
-        | "limpieza"
-        | "pintura"
-        | "cerrajero"
-        | "ensamblador"
-        | "soldador"
-        | "otro"
+      [_ in never]: never
     }
     CompositeTypes: {
       [_ in never]: never
@@ -415,30 +209,6 @@ export type CompositeTypes<
 
 export const Constants = {
   public: {
-    Enums: {
-      profession_type: [
-        "Plomero",
-        "Electricista",
-        "Jardinero",
-        "Carpintero",
-        "Pintor",
-        "Albañil",
-        "Cerrajero",
-        "Limpiador",
-        "Técnico informático",
-        "Técnico de aire acondicionado",
-      ],
-      service_type: [
-        "plomero",
-        "jardinero",
-        "electricista",
-        "limpieza",
-        "pintura",
-        "cerrajero",
-        "ensamblador",
-        "soldador",
-        "otro",
-      ],
-    },
+    Enums: {},
   },
 } as const

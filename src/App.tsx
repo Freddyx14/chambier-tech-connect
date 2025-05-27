@@ -10,6 +10,7 @@ import SearchPage from "./pages/SearchPage";
 import Login from "./pages/Login";
 import Register from "./pages/Register";
 import ProfessionalDetail from "./pages/ProfessionalDetail";
+import TrabajadorDetail from "./pages/TrabajadorDetail";
 import NotFound from "./pages/NotFound";
 import BecomeProvider from "./pages/BecomeProvider";
 import RecoverPassword from "./pages/RecoverPassword";
@@ -38,6 +39,7 @@ const App = () => (
               <Route path="/register" element={<Register />} />
               <Route path="/recuperar-password" element={<RecoverPassword />} />
               <Route path="/profesional/:id" element={<ProfessionalDetail />} />
+              <Route path="/trabajador/:id" element={<TrabajadorDetail />} />
               <Route path="/ser-chamber" element={<BecomeProvider />} />
               <Route path="/perfil" element={<ProfilePage />} />
               <Route path="/crear-chamber" element={<ChamberFormPage />} />

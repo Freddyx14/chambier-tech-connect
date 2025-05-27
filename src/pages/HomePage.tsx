@@ -3,35 +3,7 @@ import { Link } from "react-router-dom";
 import Layout from "@/components/Layout";
 import Hero from "@/components/Hero";
 import { Button } from "@/components/ui/button";
-import { ServiceProvider } from "@/components/ServiceCard";
-
-// Mock data for featured professionals
-const featuredProfessionals: Partial<ServiceProvider>[] = [
-  {
-    id: "1",
-    name: "Carlos Rodríguez",
-    profileImage: "https://randomuser.me/api/portraits/men/32.jpg",
-    profession: "Plomero"
-  },
-  {
-    id: "2",
-    name: "María Gómez",
-    profileImage: "https://randomuser.me/api/portraits/women/44.jpg",
-    profession: "Electricista"
-  },
-  {
-    id: "3",
-    name: "Juan Pérez",
-    profileImage: "https://randomuser.me/api/portraits/men/67.jpg",
-    profession: "Jardinero"
-  },
-  {
-    id: "4",
-    name: "Ana Martínez",
-    profileImage: "https://randomuser.me/api/portraits/women/26.jpg",
-    profession: "Pintora"
-  }
-];
+import TrabajadoresList from "@/components/trabajadores/TrabajadoresList";
 
 // Mock data for service categories
 const serviceCategories = [
@@ -101,7 +73,7 @@ const HomePage = () => {
         </div>
       </section>
 
-      {/* Featured Professionals */}
+      {/* Featured Professionals - Now using real data from Supabase */}
       <section className="py-20 bg-white">
         <div className="container mx-auto px-4">
           <div className="text-center mb-16">
@@ -109,23 +81,7 @@ const HomePage = () => {
             <p className="text-lg text-gray-600 max-w-2xl mx-auto">Conoce a algunos de nuestros mejores profesionales verificados</p>
           </div>
 
-          <div className="grid grid-cols-2 md:grid-cols-4 gap-8">
-            {featuredProfessionals.map((pro) => (
-              <Link to={`/profesional/${pro.id}`} key={pro.id}>
-                <div className="bg-white rounded-xl overflow-hidden text-center card-shadow hover:scale-105 transition-all duration-300">
-                  <div className="p-6">
-                    <img
-                      src={pro.profileImage}
-                      alt={pro.name}
-                      className="w-28 h-28 rounded-full object-cover mx-auto border-4 border-chambier-background shadow-sm"
-                    />
-                    <h3 className="mt-4 font-semibold text-chambier-text text-lg">{pro.name}</h3>
-                    <p className="text-chambier-primary font-medium">{pro.profession}</p>
-                  </div>
-                </div>
-              </Link>
-            ))}
-          </div>
+          <TrabajadoresList limite={4} />
 
           <div className="text-center mt-12">
             <Link to="/search">
