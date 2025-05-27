@@ -2,20 +2,13 @@
 import { useEffect, useState } from "react";
 import { useNavigate, useSearchParams } from "react-router-dom";
 import Layout from "@/components/Layout";
-import { Button } from "@/components/ui/button";
-import { Card, CardContent } from "@/components/ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { supabase } from "@/integrations/supabase/client";
-import { toast } from "@/hooks/use-toast";
-import { Category } from "@/components/CategoryFilter";
-import ServiceCard, { ServiceProvider } from "@/components/ServiceCard";
-import { Database } from "@/integrations/supabase/types";
-
-// Define profession type
-type ProfessionType = Database["public"]["Enums"]["profession_type"];
+import { useTrabajadores } from "@/hooks/useTrabajadores";
+import TrabajadorCard from "@/components/trabajadores/TrabajadorCard";
+import { Skeleton } from "@/components/ui/skeleton";
 
 // Define the categories
-const categories: Category[] = [
+const categories = [
   { id: "plomeria", name: "Plomería", icon: "🔧", profession: "Plomero" },
   { id: "electricidad", name: "Electricidad", icon: "⚡", profession: "Electricista" },
   { id: "jardineria", name: "Jardinería", icon: "🌱", profession: "Jardinero" },
@@ -28,85 +21,12 @@ const categories: Category[] = [
   { id: "aire", name: "Aire Acondicionado", icon: "❄️", profession: "Técnico de aire acondicionado" },
 ];
 
-// Map category IDs to profession types
-const categoryToProfessionMap: Record<string, ProfessionType> = {
-  plomeria: "Plomero",
-  electricidad: "Electricista",
-  jardineria: "Jardinero", 
-  carpinteria: "Carpintero",
-  pintura: "Pintor",
-  albanileria: "Albañil",
-  cerrajeria: "Cerrajero",
-  limpieza: "Limpiador",
-  informatica: "Técnico informático",
-  aire: "Técnico de aire acondicionado"
-};
-
 const ServicesPage = () => {
   const [searchParams] = useSearchParams();
   const categoryParam = searchParams.get("category") || "";
   const [activeTab, setActiveTab] = useState(categoryParam || "all");
-  const [providers, setProviders] = useState<ServiceProvider[]>([]);
-  const [loading, setLoading] = useState(true);
-  const [isLoggedIn] = useState(false); // This would be determined by your authentication system
+  const { trabajadores, loading } = useTrabajadores();
   const navigate = useNavigate();
-
-  // Fetch service providers from Supabase
-  useEffect(() => {
-    const fetchProviders = async () => {
-      setLoading(true);
-      try {
-        let query = supabase.from("professionals").select("*");
-
-        // Filter by profession if a specific category is selected
-        if (activeTab !== "all" && activeTab in categoryToProfessionMap) {
-          const profession = categoryToProfessionMap[activeTab];
-          query = query.eq("profession", profession);
-        }
-
-        // Order by rating (highest first)
-        query = query.order("rating", { ascending: false });
-
-        const { data, error } = await query;
-
-        if (error) {
-          console.error("Error fetching providers:", error);
-          toast({
-            title: "Error",
-            description: "No se pudieron cargar los profesionales. Intente nuevamente.",
-            variant: "destructive",
-          });
-          setProviders([]);
-        } else {
-          // Transform the data to match our ServiceProvider type
-          const transformedData: ServiceProvider[] = data.map(provider => ({
-            id: provider.id,
-            name: provider.name,
-            profileImage: provider.profile_image,
-            profession: provider.profession,
-            skills: provider.skills || [],
-            rating: provider.rating,
-            reviewCount: provider.review_count,
-            featured: provider.featured,
-          }));
-          
-          setProviders(transformedData);
-        }
-      } catch (error) {
-        console.error("Unexpected error:", error);
-        toast({
-          title: "Error",
-          description: "Ocurrió un error inesperado. Intente nuevamente.",
-          variant: "destructive",
-        });
-        setProviders([]);
-      } finally {
-        setLoading(false);
-      }
-    };
-
-    fetchProviders();
-  }, [activeTab]);
 
   // Handle tab change
   const handleTabChange = (value: string) => {
@@ -118,6 +38,66 @@ const ServicesPage = () => {
     } else {
       navigate(`/servicios?category=${value}`);
     }
+  };
+
+  // Filter workers based on selected category
+  const filteredTrabajadores = trabajadores.filter(trabajador => {
+    if (activeTab === "all") return true;
+    
+    const category = categories.find(cat => cat.id === activeTab);
+    if (!category) return true;
+    
+    return trabajador.profesiones.some(profesion => 
+      profesion.toLowerCase().includes(category.profession.toLowerCase())
+    );
+  });
+
+  const renderTrabajadores = () => {
+    if (loading) {
+      return (
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+          {[...Array(6)].map((_, index) => (
+            <div key={index} className="bg-white rounded-lg p-5 card-shadow">
+              <div className="flex items-start">
+                <Skeleton className="w-20 h-20 rounded-full" />
+                <div className="ml-4 flex-1">
+                  <Skeleton className="h-6 w-32 mb-2" />
+                  <Skeleton className="h-4 w-24 mb-2" />
+                  <Skeleton className="h-4 w-20" />
+                </div>
+              </div>
+              <Skeleton className="h-4 w-full mt-3 mb-2" />
+              <Skeleton className="h-4 w-3/4 mb-4" />
+              <div className="flex gap-2">
+                <Skeleton className="h-10 flex-1" />
+                <Skeleton className="h-10 flex-1" />
+              </div>
+            </div>
+          ))}
+        </div>
+      );
+    }
+
+    if (filteredTrabajadores.length === 0) {
+      return (
+        <div className="text-center py-12">
+          <h3 className="text-xl font-medium text-gray-700 mb-2">
+            No se encontraron trabajadores
+          </h3>
+          <p className="text-gray-600">
+            Intenta con otra categoría o vuelve más tarde
+          </p>
+        </div>
+      );
+    }
+
+    return (
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+        {filteredTrabajadores.map((trabajador) => (
+          <TrabajadorCard key={trabajador.id} trabajador={trabajador} />
+        ))}
+      </div>
+    );
   };
 
   return (
@@ -141,42 +121,12 @@ const ServicesPage = () => {
           </div>
 
           <TabsContent value="all" className="mt-6">
-            <div className="grid grid-cols-1 gap-6">
-              {loading ? (
-                <div className="flex justify-center py-12">
-                  <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-chambier-bright"></div>
-                </div>
-              ) : providers.length > 0 ? (
-                providers.map((provider) => (
-                  <ServiceCard key={provider.id} provider={provider} isLoggedIn={isLoggedIn} />
-                ))
-              ) : (
-                <div className="text-center py-12">
-                  <h3 className="text-xl font-medium text-gray-700 mb-2">No se encontraron profesionales</h3>
-                  <p className="text-gray-600">Intenta con otra categoría</p>
-                </div>
-              )}
-            </div>
+            {renderTrabajadores()}
           </TabsContent>
 
           {categories.map((category) => (
             <TabsContent key={category.id} value={category.id} className="mt-6">
-              <div className="grid grid-cols-1 gap-6">
-                {loading ? (
-                  <div className="flex justify-center py-12">
-                    <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-chambier-bright"></div>
-                  </div>
-                ) : providers.length > 0 ? (
-                  providers.map((provider) => (
-                    <ServiceCard key={provider.id} provider={provider} isLoggedIn={isLoggedIn} />
-                  ))
-                ) : (
-                  <div className="text-center py-12">
-                    <h3 className="text-xl font-medium text-gray-700 mb-2">No se encontraron {category.name.toLowerCase()}</h3>
-                    <p className="text-gray-600">Intenta con otra categoría</p>
-                  </div>
-                )}
-              </div>
+              {renderTrabajadores()}
             </TabsContent>
           ))}
         </Tabs>

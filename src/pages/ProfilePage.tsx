@@ -5,8 +5,6 @@ import Layout from "@/components/Layout";
 import { useAuth } from "@/contexts/AuthContext";
 import { Button } from "@/components/ui/button";
 import { useToast } from "@/hooks/use-toast";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { supabase } from "@/integrations/supabase/client";
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
 import { Loader2 } from "lucide-react";
 
@@ -14,45 +12,14 @@ const ProfilePage = () => {
   const { user, loading } = useAuth();
   const navigate = useNavigate();
   const { toast } = useToast();
-  const [userProfile, setUserProfile] = useState<any>(null);
-  const [loadingProfile, setLoadingProfile] = useState(true);
+  const [loadingProfile, setLoadingProfile] = useState(false);
 
   useEffect(() => {
     if (!loading && !user) {
       navigate("/login");
       return;
     }
-
-    if (user) {
-      fetchUserData();
-    }
   }, [user, loading]);
-
-  const fetchUserData = async () => {
-    try {
-      // Obtener perfil de usuario
-      const { data: profileData, error: profileError } = await supabase
-        .from('user_profiles')
-        .select('*')
-        .eq('id', user?.id)
-        .single();
-
-      if (profileError && profileError.code !== 'PGRST116') {
-        throw profileError;
-      }
-
-      setUserProfile(profileData);
-    } catch (error) {
-      console.error("Error fetching user data:", error);
-      toast({
-        title: "Error",
-        description: "No se pudo cargar la información del perfil",
-        variant: "destructive",
-      });
-    } finally {
-      setLoadingProfile(false);
-    }
-  };
 
   if (loading || loadingProfile) {
     return (
@@ -80,10 +47,6 @@ const ProfilePage = () => {
               <div>
                 <p className="text-sm font-medium text-gray-500">Email</p>
                 <p className="text-base">{user?.email || "No disponible"}</p>
-              </div>
-              <div>
-                <p className="text-sm font-medium text-gray-500">Teléfono</p>
-                <p className="text-base">{userProfile?.phone_number || "No disponible"}</p>
               </div>
               <div>
                 <p className="text-sm font-medium text-gray-500">Cuenta creada</p>

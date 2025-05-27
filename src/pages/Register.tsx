@@ -1,4 +1,3 @@
-
 import { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
@@ -6,7 +5,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import Layout from "@/components/Layout";
 import { useToast } from "@/hooks/use-toast";
-import { signUpWithEmail, linkPhoneToProfile } from "@/integrations/supabase/auth";
+import { signUpWithEmail } from "@/integrations/supabase/auth";
 import PhoneVerification from "@/components/PhoneVerification";
 import { Check } from "lucide-react";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
@@ -27,7 +26,6 @@ const Register = () => {
   const [phone, setPhone] = useState("");
   const [isLoading, setIsLoading] = useState(false);
   const [step, setStep] = useState<RegistrationStep>(RegistrationStep.INITIAL);
-  const [userId, setUserId] = useState<string | null>(null);
   const [registrationType, setRegistrationType] = useState<"email" | "phone">("email");
   const { toast } = useToast();
 
@@ -118,9 +116,6 @@ const Register = () => {
       title: "¡Registro completado!",
       description: "Tu cuenta ha sido creada exitosamente"
     });
-    
-    // Aquí se podría implementar la lógica adicional para crear una cuenta basada en teléfono
-    // con el nombre, teléfono y contraseña ingresados
     
     // Redirigir al usuario a la página principal después de un breve retraso
     setTimeout(() => {
