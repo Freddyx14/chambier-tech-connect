@@ -12,12 +12,8 @@ import { Loader2 } from "lucide-react";
 // Importación de componentes refactorizados
 import PersonalInfoFields from "@/components/chamber/PersonalInfoFields";
 import ProfilePhotoUpload from "@/components/chamber/ProfilePhotoUpload";
-import ServiceSelector, { ServiceType, serviceOptions } from "@/components/chamber/ServiceSelector";
+import ServiceSelector, { ServiceType } from "@/components/chamber/ServiceSelector";
 import PortfolioUploader, { PortfolioImage } from "@/components/chamber/PortfolioUploader";
-
-// Define los tipos para la base de datos
-import { Database } from "@/integrations/supabase/types";
-type ChamberServiceType = Database["public"]["Enums"]["service_type"];
 
 interface FormData {
   first_name: string;
@@ -53,66 +49,29 @@ const ChamberFormPage = () => {
   
   const [profilePhotoFile, setProfilePhotoFile] = useState<File | null>(null);
   const [isSubmitting, setIsSubmitting] = useState(false);
-  const [chamberProfileId, setChamberProfileId] = useState<string | null>(null);
+  const [trabajadorId, setTrabajadorId] = useState<string | null>(null);
 
   // Verificar si el usuario está autenticado
   useEffect(() => {
     if (!loading && !user) {
       navigate('/login-required');
     } else if (user && isEditMode) {
-      fetchChamberProfile();
+      fetchTrabajadorProfile();
     }
   }, [user, loading, isEditMode, navigate]);
 
-  // Cargar el perfil del chamber para edición
-  const fetchChamberProfile = async () => {
+  // Cargar el perfil del trabajador para edición
+  const fetchTrabajadorProfile = async () => {
     try {
-      // Obtener perfil de chamber
-      const { data: chamberData, error: chamberError } = await supabase
-        .from('chamber_profiles')
-        .select('*')
-        .eq('user_id', user?.id)
-        .single();
-
-      if (chamberError) {
-        throw chamberError;
-      }
-
-      setChamberProfileId(chamberData.id);
-      
-      // Asignar datos al formulario
-      setFormData({
-        first_name: chamberData.first_name || "",
-        last_name: chamberData.last_name || "",
-        dni: chamberData.dni || "",
-        age: chamberData.age?.toString() || "",
-        phone_number: chamberData.phone_number || "",
-        services: chamberData.services as ServiceType[] || [],
-        other_service: chamberData.other_service || "",
-        description: chamberData.description || "",
-        profile_photo: chamberData.profile_photo || "",
-        portfolio_images: []
+      // Por ahora, esta funcionalidad está deshabilitada hasta que tengamos
+      // una tabla de usuarios que se relacione con trabajadores
+      toast({
+        title: "Información",
+        description: "La edición de perfiles está en desarrollo",
+        variant: "default",
       });
-
-      // Obtener imágenes del portafolio
-      const { data: portfolioData, error: portfolioError } = await supabase
-        .from('chamber_portfolio')
-        .select('*')
-        .eq('chamber_id', chamberData.id);
-
-      if (!portfolioError && portfolioData) {
-        setFormData(prev => ({
-          ...prev,
-          portfolio_images: portfolioData.map((item: any) => ({
-            id: item.id,
-            preview: item.image_url,
-            url: item.image_url,
-            description: item.description || ""
-          }))
-        }));
-      }
     } catch (error) {
-      console.error("Error fetching chamber profile:", error);
+      console.error("Error fetching trabajador profile:", error);
       toast({
         title: "Error",
         description: "No se pudo cargar la información del perfil",
@@ -199,34 +158,6 @@ const ChamberFormPage = () => {
     setFormData(prev => ({ ...prev, portfolio_images: updatedImages }));
   };
 
-  // Subir archivo a Supabase Storage
-  const uploadFile = async (file: File, path: string): Promise<string> => {
-    const fileExt = file.name.split('.').pop();
-    const fileName = `${Date.now()}.${fileExt}`;
-    const filePath = `${path}/${fileName}`;
-
-    try {
-      const { error: uploadError } = await supabase.storage
-        .from('chamber_images')
-        .upload(filePath, file);
-
-      if (uploadError) {
-        console.error("Error uploading file:", uploadError);
-        throw uploadError;
-      }
-
-      // Obtener URL pública
-      const { data: urlData } = supabase.storage
-        .from('chamber_images')
-        .getPublicUrl(filePath);
-
-      return urlData.publicUrl;
-    } catch (error) {
-      console.error("Upload file error:", error);
-      throw new Error("Error al subir archivo");
-    }
-  };
-
   // Enviar formulario
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -242,7 +173,7 @@ const ChamberFormPage = () => {
     }
 
     // Validaciones básicas
-    if (!formData.first_name || !formData.last_name || !formData.dni || !formData.age || !formData.phone_number) {
+    if (!formData.first_name || !formData.last_name || !formData.phone_number) {
       toast({
         title: "Campos incompletos",
         description: "Por favor completa todos los campos obligatorios",
@@ -254,106 +185,50 @@ const ChamberFormPage = () => {
     setIsSubmitting(true);
 
     try {
-      console.log("Iniciando envío del formulario...");
-      let profilePhotoUrl = formData.profile_photo || "";
+      console.log("Creando perfil de trabajador...");
       
-      // Subir foto de perfil si se seleccionó una nueva
-      if (profilePhotoFile) {
-        profilePhotoUrl = await uploadFile(profilePhotoFile, 'profiles');
-      }
+      // Convertir servicios a profesiones
+      const profesiones = formData.services.includes('otro' as ServiceType) && formData.other_service
+        ? [...formData.services.filter(s => s !== 'otro'), formData.other_service]
+        : formData.services;
       
-      // Convertir servicios al tipo esperado por Supabase
-      const dbServices: ChamberServiceType[] = formData.services.map(service => 
-        service as unknown as ChamberServiceType
-      );
-      
-      // Datos del chamber para la base de datos
-      const chamberData = {
-        user_id: user.id,
-        first_name: formData.first_name,
-        last_name: formData.last_name,
-        dni: formData.dni,
-        age: parseInt(formData.age),
-        phone_number: formData.phone_number,
-        services: dbServices,
-        other_service: formData.services.includes('otro' as ServiceType) ? formData.other_service : null,
-        description: formData.description,
-        profile_photo: profilePhotoUrl
+      // Datos del trabajador para la base de datos
+      const trabajadorData = {
+        nombre: formData.first_name,
+        apellido: formData.last_name,
+        profesiones: profesiones,
+        descripcion: formData.description || null,
+        numero_celular: formData.phone_number,
+        foto_perfil: formData.profile_photo || null,
+        imagenes_trabajos: formData.portfolio_images.map(img => img.preview || img.url || '')
       };
 
-      console.log("Datos a guardar:", chamberData);
-      let chamberId = chamberProfileId;
+      console.log("Datos del trabajador:", trabajadorData);
       
-      // Crear o actualizar perfil de chamber
-      if (isEditMode && chamberProfileId) {
-        // Actualizar perfil existente
-        console.log("Actualizando perfil existente...");
-        const { error: updateError } = await supabase
-          .from('chamber_profiles')
-          .update(chamberData)
-          .eq('id', chamberProfileId);
+      // Crear nuevo perfil de trabajador
+      const { data: insertData, error: insertError } = await supabase
+        .from('trabajadores')
+        .insert(trabajadorData)
+        .select('id')
+        .single();
 
-        if (updateError) {
-          console.error("Error al actualizar:", updateError);
-          throw updateError;
-        }
-      } else {
-        // Crear nuevo perfil
-        console.log("Creando nuevo perfil...");
-        const { data: insertData, error: insertError } = await supabase
-          .from('chamber_profiles')
-          .insert(chamberData)
-          .select('id')
-          .single();
-
-        if (insertError) {
-          console.error("Error al insertar:", insertError);
-          throw insertError;
-        }
-        chamberId = insertData.id;
-        console.log("Perfil creado con ID:", chamberId);
+      if (insertError) {
+        console.error("Error al insertar trabajador:", insertError);
+        throw insertError;
       }
 
-      // Procesar imágenes del portafolio
-      if (chamberId) {
-        console.log("Procesando imágenes del portfolio...");
-        // Para cada imagen en el portafolio
-        for (const image of formData.portfolio_images) {
-          // Si es una imagen existente con ID
-          if (image.id && !image.file) {
-            // Actualizar solo la descripción si cambió
-            await supabase
-              .from('chamber_portfolio')
-              .update({ description: image.description })
-              .eq('id', image.id);
-          } 
-          // Si es una imagen nueva, subir y crear registro
-          else if (image.file) {
-            const imageUrl = await uploadFile(image.file, 'portfolio');
-            
-            await supabase
-              .from('chamber_portfolio')
-              .insert({
-                chamber_id: chamberId,
-                image_url: imageUrl,
-                description: image.description
-              });
-          }
-        }
-      }
+      console.log("Trabajador creado con ID:", insertData.id);
 
       toast({
-        title: isEditMode ? "Perfil actualizado" : "Perfil creado",
-        description: isEditMode 
-          ? "Tu perfil profesional ha sido actualizado correctamente" 
-          : "Tu perfil profesional ha sido creado y será revisado para su aprobación",
+        title: "Perfil creado",
+        description: "Tu perfil profesional ha sido creado correctamente",
       });
 
-      // Redirigir a la página de perfil
-      navigate('/perfil');
+      // Redirigir a la página principal
+      navigate('/');
       
     } catch (error) {
-      console.error("Error saving chamber profile:", error);
+      console.error("Error saving trabajador profile:", error);
       toast({
         title: "Error",
         description: "Ocurrió un error al guardar tu perfil profesional",

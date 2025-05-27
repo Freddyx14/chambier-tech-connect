@@ -72,7 +72,7 @@ const ServiceCard = ({ provider, isLoggedIn }: ServiceCardProps) => {
         </div>
 
         <div className="mt-4 flex flex-col sm:flex-row justify-between items-center">
-          <Link to={`/profesional/${provider.id}`}>
+          <Link to={`/trabajador/${provider.id}`}>
             <Button variant="outline" className="text-chambier-bright border-chambier-bright hover:bg-chambier-lightest mb-2 sm:mb-0 w-full sm:w-auto">
               Ver Perfil
             </Button>
