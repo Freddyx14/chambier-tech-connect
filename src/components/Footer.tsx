@@ -10,7 +10,7 @@ const Footer = () => {
             <Link to="/" className="flex items-center">
               <span className="text-2xl font-bold text-chambier-bright">Chambier</span>
               <img 
-                src="https://i.imgur.com/3Xoa4pn.png" 
+                src="https://imgur.com/a/aw6l9pd" 
                 alt="Trabajador Chambier" 
                 className="h-7 ml-1" 
               />
