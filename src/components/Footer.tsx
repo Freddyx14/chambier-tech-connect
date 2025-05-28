@@ -1,19 +1,12 @@
-
 import { Link } from "react-router-dom";
-
 const Footer = () => {
-  return (
-    <footer className="bg-white border-t border-gray-200">
+  return <footer className="bg-white border-t border-gray-200">
       <div className="container mx-auto px-4 py-10 md:py-12">
         <div className="grid grid-cols-1 md:grid-cols-4 gap-8">
           <div className="md:col-span-1">
             <Link to="/" className="flex items-center">
-              <span className="text-2xl font-bold text-chambier-bright">Chambier</span>
-              <img 
-                src="https://i.imgur.com/mrY1Jqa.png" 
-                alt="Trabajador Chambier" 
-                className="h-7 ml-1" 
-              />
+              <span className="text-2xl text-chambier-bright font-bold text-[#2b77ad]">Chambier</span>
+              <img src="https://i.imgur.com/mrY1Jqa.png" alt="Trabajador Chambier" className="h-7 ml-1" />
             </Link>
             <p className="mt-2 text-sm text-gray-600">
               Conectando profesionales de confianza con quienes necesitan sus servicios.
@@ -120,8 +113,6 @@ const Footer = () => {
           </p>
         </div>
       </div>
-    </footer>
-  );
+    </footer>;
 };
-
 export default Footer;
