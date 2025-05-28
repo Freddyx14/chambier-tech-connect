@@ -1,24 +1,20 @@
-
 import Layout from "@/components/Layout";
 import { Button } from "@/components/ui/button";
 import { Link, useNavigate } from "react-router-dom";
 import { Check, Award, HandHelping, Star, UserCheck, Rocket } from "lucide-react";
 import { useAuth } from "@/contexts/AuthContext";
-
 const BecomeProvider = () => {
-  const { user } = useAuth();
+  const {
+    user
+  } = useAuth();
   const navigate = useNavigate();
-  
   const handleContactClick = () => {
     window.open("https://wa.link/y5v8or", "_blank");
   };
-  
   const handleCompanyContactClick = () => {
     window.open("https://wa.link/9pkrr2", "_blank");
   };
-  
-  return (
-    <Layout>
+  return <Layout>
       {/* Hero Section */}
       <section className="py-8 md:py-12 chambier-gradient relative overflow-hidden">
         <div className="container mx-auto px-4 text-center relative z-10">
@@ -29,11 +25,7 @@ const BecomeProvider = () => {
             Hazte visible con Chambier
           </p>
           <div className="mt-8">
-            <img 
-              src="https://img.freepik.com/foto-gratis/concepto-entrega-guapo-hombre-africano-entrega-america-cruzo-brazos-sobre-aislado-fondo-estudio-gris-espacio-copia_1258-1277.jpg?semt=ais_hybrid&w=740" 
-              alt="Profesional feliz" 
-              className="rounded-xl shadow-2xl max-w-md mx-auto h-48 object-cover border-4 border-white/20"
-            />
+            <img src="https://img.freepik.com/foto-gratis/concepto-entrega-guapo-hombre-africano-entrega-america-cruzo-brazos-sobre-aislado-fondo-estudio-gris-espacio-copia_1258-1277.jpg?semt=ais_hybrid&w=740" alt="Profesional feliz" className="rounded-xl shadow-2xl max-w-md mx-auto h-48 object-cover border-4 border-white/20" />
           </div>
         </div>
       </section>
@@ -242,14 +234,12 @@ const BecomeProvider = () => {
             <Button onClick={handleContactClick} size="lg" className="bg-white text-chambier-primary hover:bg-gray-100 text-lg px-12 py-6 shadow-xl hover:shadow-2xl transition-all duration-300 font-semibold">
               Contactar para ser chamber
             </Button>
-            <Button onClick={handleCompanyContactClick} size="lg" variant="outline" className="border-2 border-white text-white hover:bg-white hover:text-chambier-primary text-lg px-12 py-6 shadow-xl hover:shadow-2xl transition-all duration-300 font-semibold">
+            <Button onClick={handleCompanyContactClick} size="lg" variant="outline" className="border-2 border-white hover:bg-white text-lg px-12 py-6 shadow-xl hover:shadow-2xl transition-all duration-300 font-semibold text-teal-500">
               Soy empresa, quiero contactarme
             </Button>
           </div>
         </div>
       </section>
-    </Layout>
-  );
+    </Layout>;
 };
-
 export default BecomeProvider;
